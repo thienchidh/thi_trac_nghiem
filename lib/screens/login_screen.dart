@@ -41,30 +41,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: _isLoading
-            ? _buildLoading()
-            : SingleChildScrollView(
-                child: Center(
-                  child: Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(36.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          loginHeader(),
-                          loginFields(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ));
+    return Scaffold(body: _isLoading ? _buildLoading() : loginBody());
+  }
+
+  loginBody() {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          loginHeader(),
+          loginFields(),
+        ],
+      ),
+    );
   }
 
   loginHeader() {
-    final Color primaryColor = Theme.of(context).primaryColor;
+    final primaryColor = Theme.of(context).primaryColor;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -127,23 +120,48 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           Container(
             padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 30.0),
-            child: CheckboxListTile(
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Text('Bạn là:'),
-              subtitle: Text(_account.isStudent ? "Sinh viên" : "Giảng viên"),
-              value: _account.isStudent,
-              onChanged: (newValue) =>
-                  setState(() => _account.isStudent = newValue),
+            child: InkWell(
+              onTap: () {
+                setState(() => _account.isStudent = !_account.isStudent);
+              },
+              child: Row(
+                children: <Widget>[
+                  Checkbox(
+                    value: _account.isStudent,
+                    onChanged: (newValue) => setState(
+                          () => _account.isStudent = newValue,
+                        ),
+                  ),
+                  Text(
+                    'Là ${_account.isStudent ? 'Sinh viên' : 'Giảng viên'}',
+                    maxLines: 1,
+                    textAlign: TextAlign.left,
+                  ),
+                ],
+              ),
             ),
           ),
           Container(
             padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 30.0),
-            child: CheckboxListTile(
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Text("Nhớ mật khẩu:"),
-              subtitle: Text(_isRememberPassword ? "Có chứ" : "Không, cảm ơn"),
-              value: _isRememberPassword,
-              onChanged: (x) => setState(() => _isRememberPassword = x),
+            child: InkWell(
+              onTap: () {
+                setState(() => _isRememberPassword = !_isRememberPassword);
+              },
+              child: Row(
+                children: <Widget>[
+                  Checkbox(
+                    value: _isRememberPassword,
+                    onChanged: (newValue) => setState(
+                          () => _isRememberPassword = newValue,
+                        ),
+                  ),
+                  Text(
+                    'Nhớ mật khẩu',
+                    maxLines: 1,
+                    textAlign: TextAlign.left,
+                  ),
+                ],
+              ),
             ),
           ),
           SizedBox(
@@ -159,7 +177,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 "ĐĂNG NHẬP",
                 style: TextStyle(color: Colors.white),
               ),
-              color: Colors.green,
               onPressed: () {
                 login();
               },
@@ -216,7 +233,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _initialize() {
     storage.readAll().then((map) {
-      print('_LoginScreenState._initialize $map');
       String username = map["username"];
       String password = map["password"];
       bool isStudent = map["isStudent"] == "true";
@@ -244,101 +260,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-}
-
-class LoginTwoPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: loginBody(),
-      ),
-    );
-  }
-
-  loginBody() => SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[loginHeader(), loginFields()],
-        ),
-      );
-
-  loginHeader() => Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          FlutterLogo(
-            colors: Colors.green,
-            size: 80.0,
-          ),
-          SizedBox(
-            height: 30.0,
-          ),
-          Text(
-            "Chào mừng bạn đến với Thi Trắc Nghiệm",
-            style: TextStyle(fontWeight: FontWeight.w700, color: Colors.green),
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          Text(
-            "Đăng nhập để tiếp tục",
-            style: TextStyle(color: Colors.grey),
-          ),
-        ],
-      );
-
-  loginFields() => Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 30.0),
-              child: TextField(
-                maxLines: 1,
-                decoration: InputDecoration(
-                  hintText: "Nhập tên người dùng của bạn",
-                  labelText: "Tên đăng nhập",
-                ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 30.0),
-              child: TextField(
-                maxLines: 1,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Nhập mật khẩu của bạn",
-                  labelText: "Mật khẩu",
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 30.0,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 30.0),
-              width: double.infinity,
-              child: RaisedButton(
-                padding: EdgeInsets.all(12.0),
-                shape: StadiumBorder(),
-                child: Text(
-                  "ĐĂNG NHẬP",
-                  style: TextStyle(color: Colors.white),
-                ),
-                color: Colors.green,
-                onPressed: () {},
-              ),
-            ),
-            SizedBox(
-              height: 5.0,
-            ),
-            Text(
-              "ĐĂNG KÍ MỘT TÀI KHOẢN",
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      );
 }
