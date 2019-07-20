@@ -18,8 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Account _account = Account();
   final storage = FlutterSecureStorage();
 
-  TextStyle _style = TextStyle(fontSize: 20.0);
-
   final _txtEmailController = TextEditingController();
 
   final _txtPasswordController = TextEditingController();
