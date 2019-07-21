@@ -6,7 +6,7 @@ class QuestionItem extends StatefulWidget {
   final Question _question;
   final int _curIndex;
 
-  QuestionItem(this._question, this._curIndex);
+  const QuestionItem(this._question, this._curIndex);
 
   @override
   State<StatefulWidget> createState() {
@@ -15,10 +15,14 @@ class QuestionItem extends StatefulWidget {
 }
 
 class _QuestionState extends State<QuestionItem> {
-  final TextStyle _questionStyle = TextStyle(
+  static const TextStyle _questionStyle = TextStyle(
     fontSize: 18.0,
     fontWeight: FontWeight.w500,
     color: Colors.white,
+  );
+
+  static const _textStyle = TextStyle(
+    fontSize: 14,
   );
 
   @override
@@ -42,7 +46,7 @@ class _QuestionState extends State<QuestionItem> {
                     backgroundColor: Colors.white70,
                     child: Text("${widget._curIndex + 1}"),
                   ),
-                  SizedBox(width: 16.0),
+                  const SizedBox(width: 16.0),
                   Expanded(
                     child: Text(
                       widget._question.content,
@@ -52,7 +56,7 @@ class _QuestionState extends State<QuestionItem> {
                   ),
                 ],
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               Card(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -87,9 +91,7 @@ class _QuestionState extends State<QuestionItem> {
     return RadioListTile(
       title: Text(
         title,
-        style: TextStyle(
-          fontSize: 14,
-        ),
+        style: _textStyle,
         textAlign: TextAlign.left,
       ),
       value: value,

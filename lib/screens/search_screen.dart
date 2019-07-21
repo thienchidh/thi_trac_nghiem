@@ -14,7 +14,7 @@ import 'package:toast/toast.dart';
 class SearchScreen extends StatefulWidget {
   final User user;
 
-  SearchScreen(this.user, {Key key}) : super(key: key);
+  const SearchScreen(this.user, {Key key}) : super(key: key);
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -26,7 +26,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final _scrollController = ScrollController();
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _offsetVisibleThreshold = 50;
+  static const _offsetVisibleThreshold = 50;
 
   ///
   /// pass [QuestionDataSource] to [QuestionBloc]'s constructor
@@ -36,15 +36,7 @@ class _SearchScreenState extends State<SearchScreen> {
   StreamSubscription<Object> _subscriptionError;
   bool isShowAppbar;
 
-  bool _hasOccurredError;
-  bool _isReachMaxItem;
-
-  _SearchScreenState({this.isShowAppbar = true});
-
-  @override
-  void initState() {
-    super.initState();
-
+  _SearchScreenState({this.isShowAppbar = true}) {
     _bloc = QuestionBloc(QuestionDataSource());
 
     // listen error, reach max items
@@ -54,36 +46,44 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // add listener to scroll controller
     _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void initState() {
+    super.initState();
 
     _search('');
   }
 
   Future<void> _onScroll() async {
+    final offset = _scrollController.offset;
+    final position = _scrollController.position;
+    final maxScrollExtent = position.maxScrollExtent;
+
     // if scroll to bottom of list, then load next page
-    if (_scrollController.offset + _offsetVisibleThreshold >=
-        _scrollController.position.maxScrollExtent) {
-      print('_bloc.loadMore.add(null)');
-      _bloc.loadMore.add(null);
+    if (offset + _offsetVisibleThreshold == maxScrollExtent ||
+        offset == maxScrollExtent) {
+      _loadMore();
     }
 
-    if (_scrollController.position.userScrollDirection ==
-        ScrollDirection.reverse) {
+    if (position.userScrollDirection == ScrollDirection.reverse) {
       if (isShowAppbar) {
         setState(() => isShowAppbar = false);
       }
-    } else if (_scrollController.position.userScrollDirection ==
-        ScrollDirection.forward) {
+    } else if (position.userScrollDirection == ScrollDirection.forward) {
       if (!isShowAppbar) {
         setState(() => isShowAppbar = true);
       }
     }
   }
 
+  void _loadMore() {
+    print('_bloc.loadMore.add(null)');
+    _bloc.loadMore.add(null);
+  }
+
   Future<void> _search(String keyWord) async {
     await _lock.synchronized(() async {
-      _isReachMaxItem = false;
-      _hasOccurredError = false;
-
       _bloc.keyWord = keyWord;
       await _bloc.refresh();
     });
@@ -108,7 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   .animateTo(
                 0.0,
                 curve: Curves.ease,
-                duration: const Duration(milliseconds: 5000),
+                duration: const Duration(milliseconds: 10000),
               )
                   .then((x) => setState(() => isShowAppbar = !isShowAppbar));
             },
@@ -199,7 +199,7 @@ class _SearchScreenState extends State<SearchScreen> {
         if (error != null) {
           return ListTile(
             title: Text(
-              'Error while loading data...',
+              'Có lỗi xảy ra, click vào đây để thử lại!',
               style: Theme.of(context).textTheme.body1.copyWith(fontSize: 16.0),
             ),
             isThreeLine: false,
@@ -208,7 +208,9 @@ class _SearchScreenState extends State<SearchScreen> {
               foregroundColor: Colors.white,
               backgroundColor: Colors.redAccent,
             ),
-            onTap: () {},
+            onTap: () {
+              _loadMore();
+            },
           );
         }
 
@@ -219,7 +221,7 @@ class _SearchScreenState extends State<SearchScreen> {
               child: CircularProgressIndicator(
                 strokeWidth: 2.0,
               ),
-              visible: isLoading && !_isReachMaxItem,
+              visible: isLoading,
             ),
           ),
         );
@@ -231,34 +233,29 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> _onReachMaxItem(void _) async {
     // show animation when loaded all data
-    if (!_isReachMaxItem) {
-      setState(() {
-        _isReachMaxItem = !_isReachMaxItem;
-      });
-      _scaffoldKey.currentState
-          ?.showSnackBar(
-            SnackBar(
-              content: Text('Got all data!'),
-            ),
-          )
-          ?.closed;
-    }
+    _scaffoldKey.currentState
+        ?.showSnackBar(
+      SnackBar(
+        content: Text('Hết rồi!'),
+      ),
+    )
+        ?.closed;
   }
 
   Future<void> _onError(Object error) async {
-    if (!_hasOccurredError) {
-      _hasOccurredError = !_hasOccurredError;
-      _scaffoldKey.currentState
-          ?.showSnackBar(
-        SnackBar(
-          content: Text('Error occurred: $error'),
-        ),
-      )
-          ?.closed;
-    }
+    _scaffoldKey.currentState
+        ?.showSnackBar(
+      SnackBar(
+        content: Text('Có lỗi xảy ra, vui lòng thử lại sau!'),
+      ),
+    )
+        ?.closed;
   }
 
   Future<bool> _willPopCallback() async {
+    if (_scaffoldKey.currentState.isDrawerOpen) {
+      return true;
+    }
     return showDialog<bool>(
       context: context,
       builder: (_) {
