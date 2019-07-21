@@ -21,21 +21,6 @@ class _QuestionState extends State<QuestionItem> {
     color: Colors.white,
   );
 
-  Widget _makeRadioButton({@required String title, @required String value}) {
-    return RadioListTile(
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 14,
-        ),
-        textAlign: TextAlign.left,
-      ),
-      value: value,
-      groupValue: widget._question.answerOfUser,
-      onChanged: (x) => setState(() => widget._question.answerOfUser = x),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -95,6 +80,21 @@ class _QuestionState extends State<QuestionItem> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _makeRadioButton({@required String title, @required String value}) {
+    return RadioListTile(
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+        ),
+        textAlign: TextAlign.left,
+      ),
+      value: value,
+      groupValue: widget._question.answerOfUser,
+      onChanged: (x) => setState(() => widget._question.answerOfUser = x),
     );
   }
 }

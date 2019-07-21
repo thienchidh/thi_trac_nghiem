@@ -10,6 +10,8 @@ class CommonDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textStyle = TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -28,7 +30,7 @@ class CommonDrawer extends StatelessWidget {
           ListTile(
             title: Text(
               "Profile",
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+              style: textStyle,
             ),
             leading: Icon(
               Icons.person,
@@ -38,7 +40,7 @@ class CommonDrawer extends StatelessWidget {
           ListTile(
             title: Text(
               "Timeline",
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+              style: textStyle,
             ),
             leading: Icon(
               Icons.timeline,
@@ -48,7 +50,7 @@ class CommonDrawer extends StatelessWidget {
           ListTile(
             title: Text(
               "Settings",
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+              style: textStyle,
             ),
             leading: Icon(
               Icons.settings,
@@ -58,18 +60,42 @@ class CommonDrawer extends StatelessWidget {
           ListTile(
             title: Text(
               "Logout",
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+              style: textStyle,
             ),
             leading: Icon(
               Icons.exit_to_app,
               color: Colors.redAccent,
             ),
             onTap: () {
-              //TODO logout ...
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (_) => LoginScreen(),
-                ),
+              return showDialog<bool>(
+                context: context,
+                builder: (_) {
+                  return AlertDialog(
+                    title: Text("Đăng xuất"),
+                    content: Text(
+                      'Tài khoản "${user
+                          .name}" sẽ được đăng xuất khỏi thiết bị này?',
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text("Yes"),
+                        onPressed: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (_) => LoginScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      FlatButton(
+                        child: Text("No"),
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        },
+                      ),
+                    ],
+                  );
+                },
               );
             },
           ),

@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:collection' show UnmodifiableListView;
+import 'dart:math';
 
 import 'package:collection/collection.dart' show ListEquality;
 import 'package:meta/meta.dart';
@@ -48,10 +48,11 @@ class QuestionListState {
       other is QuestionListState &&
           runtimeType == other.runtimeType &&
           const ListEquality().equals(question, other.question) &&
-          isLoading == other.isLoading;
+          isLoading == other.isLoading &&
+          error == other.error;
 
   @override
-  int get hashCode => question.hashCode ^ isLoading.hashCode;
+  int get hashCode => question.hashCode ^ isLoading.hashCode ^ error.hashCode;
 
   @override
   String toString() =>
@@ -74,7 +75,8 @@ class QuestionBloc {
   /// BehaviorSubject of errors, emit null when have no error
   ///
   final _errorController = BehaviorSubject<Object>(seedValue: null, sync: true);
-  ValueObservable<Object> _errorNullable$;
+
+//  ValueObservable<Object> _errorNullable$;
   Stream<Object> _errorNotNull$; // stream of errors exposed to UI
 
   ///
@@ -123,7 +125,7 @@ class QuestionBloc {
   Stream<Object> get error => _errorNotNull$;
 
   QuestionBloc(this._questionDataSource) : assert(_questionDataSource != null) {
-    _errorNullable$ = _errorController;
+//    _errorNullable$ = _errorController;
     _errorNotNull$ = _errorController.where((error) => error != null);
     _isLoadingFirstPage$ = _isLoadingFirstPageController.stream;
 
@@ -131,9 +133,10 @@ class QuestionBloc {
         .throttle(Duration(milliseconds: 50))
         .doOnData((_) => print('_loadMoreController emitted...'))
         .where((_) {
-          final error = _errorNullable$.value;
           final isLoadingFirstPage = _isLoadingFirstPage$.value;
-          return !isLoadingFirstPage && error == null;
+//          final error = _errorNullable$.value;
+//          return !isLoadingFirstPage && error == null;
+      return !isLoadingFirstPage;
         })
         .doOnData((_) => print('Load more emitted...'))
         .map((_) => false)

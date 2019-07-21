@@ -62,6 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
+        SizedBox(
+          height: 80.0,
+        ),
         FlutterLogo(
           size: 80.0,
           colors: primaryColor,

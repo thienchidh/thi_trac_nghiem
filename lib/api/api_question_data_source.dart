@@ -40,9 +40,10 @@ class QuestionDataSource implements IQuestionDataSource {
       _updateSearchParameter(keyWord);
     }
 
-    String key = _makeKeyCache(_keyWord, _startId);
+    final key = _makeKeyCache(_keyWord, _startId);
     if (_cache.containsKey(key)) {
-      return _fetchCacheResult(key);
+      final cacheResult = _fetchCacheResult(key);
+      return cacheResult != null ? cacheResult : _fetchNetworkResult();
     }
     return _fetchNetworkResult();
   }
@@ -53,26 +54,21 @@ class QuestionDataSource implements IQuestionDataSource {
     return listQuestions.listData;
   }
 
-  Future<List<Question>> _fetchNetworkResult() {
+  Future<List<Question>> _fetchNetworkResult() async {
     final path =
         '$baseUrl/apiThitracnghiem/api01/General?doing=$_doing&startId=$_startId&key=$_keyWord';
+    try {
+      final response = await _client.get('$path');
+      final questions = ListQuestions.fromJson(json.decode(response.body));
 
-    final Future<List<Question>> data = _client.get('$path').then((response) {
-      try {
-        final listQuestions =
-            ListQuestions.fromJson(json.decode(response.body));
+      String key = _makeKeyCache(_keyWord, _startId);
+      _cache[key] = questions;
 
-        String key = _makeKeyCache(_keyWord, _startId);
-        _cache[key] = listQuestions;
-
-        _startId = listQuestions.nextId;
-        return listQuestions.listData;
-      } catch (e) {
-        print(e);
-        throw StateError('$e');
-      }
-    });
-
-    return data;
+      _startId = questions.nextId;
+      return questions.listData;
+    } catch (e) {
+      print(e);
+      throw StateError('$e');
+    }
   }
 }

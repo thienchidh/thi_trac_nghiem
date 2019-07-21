@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
       title: 'Thi Trắc Nghiệm',
       theme: ThemeData(
         primarySwatch: Colors.pink,
-        accentColor: Colors.indigo,
+        accentColor: Colors.pink,
         fontFamily: "Montserrat",
         buttonColor: Colors.pink,
         buttonTheme: ButtonThemeData(

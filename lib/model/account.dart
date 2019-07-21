@@ -1,24 +1,9 @@
-import 'package:meta/meta.dart';
+
 
 class Account {
-  String _name;
   String _username;
   String _password;
   bool _isStudent;
-
-  String _maso;
-
-  String get maso => _maso;
-
-  set maso(String value) {
-    _maso = value;
-  }
-
-  String get name => _name;
-
-  set name(String value) {
-    _name = value;
-  }
 
   Account({
     username,
