@@ -5,6 +5,12 @@ import 'package:http/http.dart';
 import 'package:thi_trac_nghiem/model/account.dart';
 
 class LoginApi {
+  static final _singleton = LoginApi._();
+
+  LoginApi._();
+
+  factory LoginApi() => _singleton;
+
   final String _baseUrl = "http://103.81.86.156:8080";
   final Client _client = Client();
 
@@ -19,17 +25,15 @@ class LoginApi {
 
       final response = await _client
           .post(
-            url,
-            body: queryParameters,
-          )
+        url,
+        body: queryParameters,
+      )
           .timeout(
-            const Duration(
-              seconds: 10,
-            ),
-          );
-      final results = json.decode(
-        response.body,
+        const Duration(
+          seconds: 10,
+        ),
       );
+      final results = json.decode(response.body);
 
       User user = User.fromJson(results);
       if (user.status != "success" ||

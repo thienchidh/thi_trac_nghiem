@@ -1,6 +1,7 @@
 import 'package:flip_panel/flip_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
+import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class Timer extends StatefulWidget {
   @override
@@ -33,7 +34,7 @@ class _TimerState extends State<Timer> {
             clipper: WaveClipperOne(),
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
+                color: UIData.primaryColor,
               ),
               height: 200,
             ),
@@ -44,7 +45,7 @@ class _TimerState extends State<Timer> {
                 duration: _duration,
                 digitColor: Colors.white,
                 borderRadius: BorderRadius.circular(3.0),
-                backgroundColor: Theme.of(context).accentColor,
+                backgroundColor: UIData.accentColor,
                 digitSize: 40,
                 flipDirection: FlipDirection.down,
                 onDone: () {

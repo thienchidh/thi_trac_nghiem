@@ -217,7 +217,7 @@ class QuestionBloc {
       question.addAll(questions);
 
       final int newTime = DateTime.now().millisecondsSinceEpoch;
-      final int totalSleepRecommend = 1500;
+      final int totalSleepRecommend = 1000;
       final int normalSleep = 100;
 
       await Future.delayed(

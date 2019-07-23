@@ -1,8 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:thi_trac_nghiem/api/login_api.dart';
+import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/account.dart';
-import 'package:thi_trac_nghiem/screens/search_screen.dart';
+import 'package:thi_trac_nghiem/utils/ui_data.dart';
 import 'package:toast/toast.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -24,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isRememberPassword = true;
 
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -57,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   loginHeader() {
-    final primaryColor = Theme.of(context).primaryColor;
+    final primaryColor = UIData.primaryColor;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 30.0,
         ),
         Text(
-          'Chào mừng bạn đến với Thi Trắc Nghiệm',
+          'Chào mừng bạn đến với ${UIData.APP_NAME}',
           style: TextStyle(
             fontWeight: FontWeight.w700,
             color: primaryColor,
@@ -155,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     value: _isRememberPassword,
                     onChanged: (newValue) => setState(
                           () => _isRememberPassword = newValue,
-                        ),
+                    ),
                   ),
                   Text(
                     'Nhớ mật khẩu',
@@ -179,8 +181,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 'ĐĂNG NHẬP',
                 style: TextStyle(color: Colors.white),
               ),
-              onPressed: () {
-                login();
+              onPressed: () async {
+                if (!_isLoading) {
+                  setState(() => _isLoading = true);
+
+                  if (_txtEmailController.text.isEmpty ||
+                      _txtPasswordController.text.isEmpty) {
+                    Toast.show('Bạn phải điền đầy đủ thông tin', context);
+                    return;
+                  }
+
+                  if (_isRememberPassword) {
+                    _storePassWord(_account);
+                  } else {
+                    _storePassWord(Account());
+                  }
+
+                  // login
+                  bool isLoginSuccess = await _login();
+                  if (isLoginSuccess) {
+                    await _forwardHomeScreen();
+                  } else {
+                    Toast.show('Đăng nhập thất bại!', context);
+                  }
+                  setState(() => _isLoading = false);
+                } else {
+                  Toast.show('Thao tác quá nhanh!', context);
+                }
               },
             ),
           ),
@@ -196,58 +223,70 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future login() async {
-    if (!_isLoading) {
-      if (_txtEmailController.text.isEmpty ||
-          _txtPasswordController.text.isEmpty) {
-        Toast.show('Bạn phải điền đầy đủ thông tin', context);
-        return;
-      }
-      setState(() => _isLoading = true);
-      if (_isRememberPassword) {
-        _rememberPassWord(_account);
-      } else {
-        _rememberPassWord(Account());
-      }
-      User user = await LoginApi().verifyLogin(_account);
-
-      if (user != null) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => SearchScreen(user),
-          ),
-        );
-        Toast.show('Đăng nhập thành công!', context);
-      } else {
-        Toast.show('Đăng nhập thất bại!', context);
-      }
-      setState(() => _isLoading = false);
-    } else {
-      Toast.show('Thao tác quá nhanh!', context);
-    }
+  Future _forwardHomeScreen() async {
+    await Navigator.pushReplacementNamed(context, UIData.HOME_ROUTE_NAME);
   }
 
-  Future<void> _rememberPassWord(Account a) async {
+  Future<bool> _login() async {
+    User user = await UserManagement().login(_account);
+    return user != null;
+  }
+
+  Future<void> _storePassWord(Account a) async {
     await storage.write(key: 'username', value: a.username);
     await storage.write(key: 'password', value: a.password);
     await storage.write(key: 'isStudent', value: a.isStudent.toString());
   }
 
-  void _initialize() {
-    storage.readAll().then((map) {
-      String username = map['username'];
-      String password = map['password'];
-      bool isStudent = map['isStudent'] == 'true';
+  Future<void> _initialize() async {
+    Map<String, String> map = await storage.readAll();
 
-      setState(() {
-        _account = Account(
-          username: username,
-          password: password,
-          isStudent: isStudent,
-        );
-      });
-      _txtEmailController.text = _account.username;
-      _txtPasswordController.text = _account.password;
+    String username = map['username'];
+    String password = map['password'];
+    bool isStudent = map['isStudent'] == 'true';
+
+    setState(() {
+      _account = Account(
+        username: username,
+        password: password,
+        isStudent: isStudent,
+      );
+    });
+    _txtEmailController.text = _account.username;
+    _txtPasswordController.text = _account.password;
+
+    bool isValid(String x) {
+      return x != null && x.isNotEmpty;
+    }
+
+    final int oldTime = DateTime
+        .now()
+        .millisecondsSinceEpoch;
+
+    if (!UserManagement().isUserLogout) {
+      bool isLoginSuccess = false;
+      if (isValid(username) && isValid(password)) {
+        isLoginSuccess = await _login();
+      }
+
+      final int newTime = DateTime
+          .now()
+          .millisecondsSinceEpoch;
+      final int totalSleepRecommend = 3000;
+
+      await Future.delayed(
+        Duration(
+          milliseconds: max(0, newTime - oldTime + totalSleepRecommend),
+        ),
+      );
+
+      if (isLoginSuccess) {
+        await _forwardHomeScreen();
+      }
+    }
+
+    setState(() {
+      _isLoading = false;
     });
   }
 

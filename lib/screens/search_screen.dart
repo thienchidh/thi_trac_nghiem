@@ -5,17 +5,12 @@ import 'package:flutter/rendering.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:thi_trac_nghiem/api/api_question_data_source.dart';
 import 'package:thi_trac_nghiem/bloc/question_bloc.dart';
-import 'package:thi_trac_nghiem/model/account.dart';
 import 'package:thi_trac_nghiem/widget/common_drawer.dart';
 import 'package:thi_trac_nghiem/widget/question_item.dart';
 import 'package:thi_trac_nghiem/widget/search_bar.dart';
 import 'package:toast/toast.dart';
 
 class SearchScreen extends StatefulWidget {
-  final User user;
-
-  const SearchScreen(this.user, {Key key}) : super(key: key);
-
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
@@ -91,53 +86,50 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _willPopCallback,
-      child: Scaffold(
-        key: _scaffoldKey,
-        floatingActionButton: Visibility(
-          visible: !isShowAppbar,
-          child: FloatingActionButton(
-            tooltip: 'Scroll to top',
-            mini: true,
-            child: Icon(
-              Icons.keyboard_arrow_up,
-            ),
-            onPressed: () {
-              _scrollController.animateTo(
-                0.0,
-                curve: Curves.ease,
-                duration: const Duration(milliseconds: 10000),
-              );
+    return Scaffold(
+      key: _scaffoldKey,
+      floatingActionButton: Visibility(
+        visible: !isShowAppbar,
+        child: FloatingActionButton(
+          tooltip: 'Scroll to top',
+          mini: true,
+          child: Icon(
+            Icons.keyboard_arrow_up,
+          ),
+          onPressed: () {
+            _scrollController.animateTo(
+              0.0,
+              curve: Curves.ease,
+              duration: const Duration(milliseconds: 10000),
+            );
+          },
+        ),
+      ),
+      drawer: CommonDrawer(),
+      body: RefreshIndicator(
+        child: Container(
+          constraints: BoxConstraints.expand(),
+          child: StreamBuilder<QuestionListState>(
+            stream: _bloc.questionList,
+            builder: (BuildContext context,
+                AsyncSnapshot<QuestionListState> snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error ${snapshot.error}'),
+                );
+              }
+
+              if (!snapshot.hasData) {
+                return const Center(
+                  child: const CircularProgressIndicator(),
+                );
+              }
+
+              return _buildList(snapshot);
             },
           ),
         ),
-        drawer: CommonDrawer(widget.user),
-        body: RefreshIndicator(
-          child: Container(
-            constraints: BoxConstraints.expand(),
-            child: StreamBuilder<QuestionListState>(
-              stream: _bloc.questionList,
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuestionListState> snapshot) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error ${snapshot.error}'),
-                  );
-                }
-
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: const CircularProgressIndicator(),
-                  );
-                }
-
-                return _buildList(snapshot);
-              },
-            ),
-          ),
-          onRefresh: _bloc.refresh,
-        ),
+        onRefresh: _bloc.refresh,
       ),
     );
   }
@@ -250,35 +242,5 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     )
         ?.closed;
-  }
-
-  Future<bool> _willPopCallback() async {
-    if (_scaffoldKey.currentState.isDrawerOpen) {
-      return true;
-    }
-    return showDialog<bool>(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          content: Text(
-              "Are you sure you want to quit the quiz? All your progress will be lost."),
-          title: Text("Warning!"),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("Yes"),
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-            ),
-            FlatButton(
-              child: Text("No"),
-              onPressed: () {
-                Navigator.pop(context, false);
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

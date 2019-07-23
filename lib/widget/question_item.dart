@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:thi_trac_nghiem/model/list_questions.dart';
+import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class QuestionItem extends StatefulWidget {
   final Question _question;
@@ -32,7 +33,7 @@ class _QuestionState extends State<QuestionItem> {
         ClipPath(
           clipper: WaveClipperOne(),
           child: Container(
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+            decoration: BoxDecoration(color: UIData.primaryColor),
             height: 200,
           ),
         ),

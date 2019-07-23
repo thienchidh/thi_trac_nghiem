@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/account.dart';
-import 'package:thi_trac_nghiem/screens/login_screen.dart';
+import 'package:thi_trac_nghiem/utils/ui_data.dart';
 import 'package:thi_trac_nghiem/widget/about_tile.dart';
 
 class CommonDrawer extends StatelessWidget {
-  final User user;
-
-  CommonDrawer(this.user);
+  final User user = UserManagement().curUser;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +37,7 @@ class CommonDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text(
-              "Profile",
+              'Profile',
               style: textStyle,
             ),
             leading: Icon(
@@ -48,7 +47,7 @@ class CommonDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text(
-              "Timeline",
+              'Timeline',
               style: textStyle,
             ),
             leading: Icon(
@@ -58,7 +57,7 @@ class CommonDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text(
-              "Settings",
+              'Settings',
               style: textStyle,
             ),
             leading: Icon(
@@ -66,9 +65,10 @@ class CommonDrawer extends StatelessWidget {
               color: Colors.brown,
             ),
           ),
+          Divider(),
           ListTile(
             title: Text(
-              "Logout",
+              'Logout',
               style: textStyle,
             ),
             leading: Icon(
@@ -80,24 +80,29 @@ class CommonDrawer extends StatelessWidget {
                 context: context,
                 builder: (_) {
                   return AlertDialog(
-                    title: Text("Đăng xuất"),
+                    title: Text('Đăng xuất'),
                     content: Text(
-                      'Tài khoản "${user
-                          .name}" sẽ được đăng xuất khỏi thiết bị này?',
+                      'Tài khoản \'${user
+                          .name}\' sẽ được đăng xuất khỏi thiết bị này?',
                     ),
                     actions: <Widget>[
                       FlatButton(
-                        child: Text("Yes"),
+                        child: Text('Yes'),
                         onPressed: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (_) => LoginScreen(),
-                            ),
+                          // set auto login = false
+                          UserManagement().isUserLogout = true;
+
+                          while (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/${UIData.LOGIN_ROUTE_NAME}',
                           );
                         },
                       ),
                       FlatButton(
-                        child: Text("No"),
+                        child: Text('No'),
                         onPressed: () {
                           Navigator.pop(context, false);
                         },

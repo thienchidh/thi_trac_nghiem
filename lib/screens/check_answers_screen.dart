@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:thi_trac_nghiem/model/list_questions.dart';
+import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class CheckAnswersScreen extends StatelessWidget {
   final List<Question> questions;
@@ -22,7 +23,7 @@ class CheckAnswersScreen extends StatelessWidget {
           ClipPath(
             clipper: WaveClipperTwo(),
             child: Container(
-              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+              decoration: BoxDecoration(color: UIData.primaryColor),
               height: 200,
             ),
           ),

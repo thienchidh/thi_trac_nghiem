@@ -5,16 +5,18 @@ import 'package:http/http.dart';
 import 'package:thi_trac_nghiem/api/question_data_source.dart';
 import 'package:thi_trac_nghiem/model/list_questions.dart';
 
-///
-/// An implementation of [IQuestionDataSource], used to test when having no internet connection
-///
+/// An implementation of [IQuestionDataSource]
 
 class QuestionDataSource implements IQuestionDataSource {
+  static final _singleton = QuestionDataSource._();
+
   final Client _client;
   final Map<String, ListQuestions> _cache;
   final baseUrl = 'http://103.81.86.156:8080';
 
-  QuestionDataSource()
+  factory QuestionDataSource() => _singleton;
+
+  QuestionDataSource._()
       : _client = Client(),
         _cache = HashMap(),
         super();

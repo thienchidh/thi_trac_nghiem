@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class AboutApp extends StatelessWidget {
   @override
@@ -18,8 +19,8 @@ class AboutApp extends StatelessWidget {
           'Phát triển bởi team Data4U',
         ),
       ],
-      applicationName: 'Thi Trắc Nghiệm',
-      applicationVersion: 'Phiên bản 1.0.0',
+      applicationName: '${UIData.APP_NAME}',
+      applicationVersion: 'Phiên bản ${UIData.VERSION_APP}',
       applicationLegalese: 'Apache License 2.0',
     );
   }

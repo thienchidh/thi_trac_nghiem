@@ -1,5 +1,3 @@
-
-
 class Account {
   String _username;
   String _password;

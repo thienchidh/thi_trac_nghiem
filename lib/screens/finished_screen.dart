@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:thi_trac_nghiem/model/list_questions.dart';
 import 'package:thi_trac_nghiem/screens/check_answers_screen.dart';
+import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class FinishedScreen extends StatelessWidget {
   final List<Question> questions;
@@ -19,7 +20,7 @@ class FinishedScreen extends StatelessWidget {
     final TextStyle titleStyle = TextStyle(
         color: Colors.black87, fontSize: 16.0, fontWeight: FontWeight.w500);
     final TextStyle trailingStyle = TextStyle(
-        color: Theme.of(context).primaryColor,
+        color: UIData.primaryColor,
         fontSize: 20.0,
         fontWeight: FontWeight.bold);
 
@@ -32,10 +33,10 @@ class FinishedScreen extends StatelessWidget {
         height: double.infinity,
         width: double.infinity,
         decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-          Theme.of(context).primaryColor,
-          Theme.of(context).accentColor
-        ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+            gradient: LinearGradient(
+                colors: [UIData.primaryColor, UIData.primaryColor],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter)),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -93,7 +94,7 @@ class FinishedScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    color: Theme.of(context).accentColor.withOpacity(0.8),
+                    color: UIData.accentColor,
                     child: Text('Về trang chủ'),
                     onPressed: () => Navigator.pop(context),
                   ),
@@ -103,7 +104,7 @@ class FinishedScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    color: Theme.of(context).primaryColor,
+                    color: UIData.primaryColor,
                     child: Text('Check đáp án'),
                     onPressed: () {
                       Navigator.of(context).push(
