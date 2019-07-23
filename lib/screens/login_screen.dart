@@ -62,28 +62,28 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 80.0,
         ),
         FlutterLogo(
           size: 80.0,
           colors: primaryColor,
         ),
-        SizedBox(
+        const SizedBox(
           height: 30.0,
         ),
         Text(
-          "Chào mừng bạn đến với Thi Trắc Nghiệm",
+          'Chào mừng bạn đến với Thi Trắc Nghiệm',
           style: TextStyle(
             fontWeight: FontWeight.w700,
             color: primaryColor,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 5.0,
         ),
         Text(
-          "Đăng nhập để tiếp tục",
+          'Đăng nhập để tiếp tục',
           style: TextStyle(color: Colors.grey),
         ),
       ],
@@ -103,8 +103,8 @@ class _LoginScreenState extends State<LoginScreen> {
               onChanged: (x) => _account.username = x,
               maxLines: 1,
               decoration: InputDecoration(
-                hintText: "Nhập tên người dùng của bạn",
-                labelText: "Tên đăng nhập",
+                hintText: 'Nhập tên người dùng của bạn',
+                labelText: 'Tên đăng nhập',
               ),
             ),
           ),
@@ -116,24 +116,20 @@ class _LoginScreenState extends State<LoginScreen> {
               maxLines: 1,
               obscureText: true,
               decoration: InputDecoration(
-                hintText: "Nhập mật khẩu của bạn",
-                labelText: "Mật khẩu",
+                hintText: 'Nhập mật khẩu của bạn',
+                labelText: 'Mật khẩu',
               ),
             ),
           ),
           Container(
             padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 30.0),
             child: InkWell(
-              onTap: () {
-                setState(() => _account.isStudent = !_account.isStudent);
-              },
               child: Row(
                 children: <Widget>[
                   Checkbox(
                     value: _account.isStudent,
-                    onChanged: (newValue) => setState(
-                          () => _account.isStudent = newValue,
-                        ),
+                    onChanged: (newValue) =>
+                        setState(() => _account.isStudent = newValue),
                   ),
                   Text(
                     'Là ${_account.isStudent ? 'Sinh viên' : 'Giảng viên'}',
@@ -142,6 +138,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
+              onTap: () {
+                setState(() => _account.isStudent = !_account.isStudent);
+              },
             ),
           ),
           Container(
@@ -167,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30.0,
           ),
           Container(
@@ -177,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: EdgeInsets.all(12.0),
               shape: StadiumBorder(),
               child: Text(
-                "ĐĂNG NHẬP",
+                'ĐĂNG NHẬP',
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -185,11 +184,11 @@ class _LoginScreenState extends State<LoginScreen> {
               },
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 5.0,
           ),
           Text(
-            "TẠO MỘT TÀI KHOẢN",
+            'TẠO MỘT TÀI KHOẢN',
             style: TextStyle(color: Colors.grey),
           ),
         ],
@@ -201,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_isLoading) {
       if (_txtEmailController.text.isEmpty ||
           _txtPasswordController.text.isEmpty) {
-        Toast.show("Bạn phải điền đầy đủ thông tin", context);
+        Toast.show('Bạn phải điền đầy đủ thông tin', context);
         return;
       }
       setState(() => _isLoading = true);
@@ -218,27 +217,27 @@ class _LoginScreenState extends State<LoginScreen> {
             builder: (_) => SearchScreen(user),
           ),
         );
-        Toast.show("Đăng nhập thành công!", context);
+        Toast.show('Đăng nhập thành công!', context);
       } else {
-        Toast.show("Đăng nhập thất bại!", context);
+        Toast.show('Đăng nhập thất bại!', context);
       }
       setState(() => _isLoading = false);
     } else {
-      Toast.show("Thao tác quá nhanh!", context);
+      Toast.show('Thao tác quá nhanh!', context);
     }
   }
 
   Future<void> _rememberPassWord(Account a) async {
-    await storage.write(key: "username", value: a.username);
-    await storage.write(key: "password", value: a.password);
-    await storage.write(key: "isStudent", value: a.isStudent.toString());
+    await storage.write(key: 'username', value: a.username);
+    await storage.write(key: 'password', value: a.password);
+    await storage.write(key: 'isStudent', value: a.isStudent.toString());
   }
 
   void _initialize() {
     storage.readAll().then((map) {
-      String username = map["username"];
-      String password = map["password"];
-      bool isStudent = map["isStudent"] == "true";
+      String username = map['username'];
+      String password = map['password'];
+      bool isStudent = map['isStudent'] == 'true';
 
       setState(() {
         _account = Account(
@@ -254,10 +253,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildLoading() {
     return Center(
-      child: SizedBox(
+      child: const SizedBox(
         width: 24.0,
         height: 24.0,
-        child: CircularProgressIndicator(
+        child: const CircularProgressIndicator(
           strokeWidth: 2.0,
         ),
       ),

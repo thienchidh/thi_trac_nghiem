@@ -104,37 +104,13 @@ class _SearchScreenState extends State<SearchScreen> {
               Icons.keyboard_arrow_up,
             ),
             onPressed: () {
-              _scrollController
-                  .animateTo(
+              _scrollController.animateTo(
                 0.0,
                 curve: Curves.ease,
                 duration: const Duration(milliseconds: 10000),
-              )
-                  .then((x) => setState(() => isShowAppbar = !isShowAppbar));
+              );
             },
           ),
-        ),
-        appBar: !isShowAppbar
-            ? PreferredSize(
-          preferredSize: Size(0.0, 0.0),
-          child: Container(
-            color: Theme
-                .of(context)
-                .primaryColor,
-          ),
-        )
-            : AppBar(
-          title: SearchBar(
-              performSearch: _search,
-              performOpenDrawer: () {
-                final currentState = _scaffoldKey.currentState;
-                if (!currentState.isDrawerOpen) {
-                  currentState.openDrawer();
-                }
-              }),
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          titleSpacing: 0.0,
         ),
         drawer: CommonDrawer(widget.user),
         body: RefreshIndicator(
@@ -151,8 +127,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 }
 
                 if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(),
+                  return const Center(
+                    child: const CircularProgressIndicator(),
                   );
                 }
 
@@ -178,56 +154,80 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  ListView _buildList(AsyncSnapshot<QuestionListState> snapshot) {
+  Widget _buildList(AsyncSnapshot<QuestionListState> snapshot) {
     final data = snapshot.data.question;
     final isLoading = snapshot.data.isLoading;
     final error = snapshot.data.error;
 
-    return ListView.separated(
-      physics: AlwaysScrollableScrollPhysics(),
+    return CustomScrollView(
       controller: _scrollController,
-      itemBuilder: (BuildContext context, int index) {
-        if (index < data.length) {
-          return InkWell(
-            onTap: () {
-              Toast.show(data[index].dapAnDung, context);
+      physics: AlwaysScrollableScrollPhysics(),
+      slivers: <Widget>[
+        SliverAppBar(
+          title: SearchBar(
+            performSearch: _search,
+            performOpenDrawer: () {
+              final currentState = _scaffoldKey.currentState;
+              if (!currentState.isDrawerOpen) {
+                currentState.openDrawer();
+              }
             },
-            child: QuestionItem(data[index], index),
-          );
-        }
-
-        if (error != null) {
-          return ListTile(
-            title: Text(
-              'Có lỗi xảy ra, click vào đây để thử lại!',
-              style: Theme.of(context).textTheme.body1.copyWith(fontSize: 16.0),
-            ),
-            isThreeLine: false,
-            leading: CircleAvatar(
-              child: Text(':('),
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.redAccent,
-            ),
-            onTap: () {
-              _loadMore();
-            },
-          );
-        }
-
-        return Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Center(
-            child: Visibility(
-              child: CircularProgressIndicator(
-                strokeWidth: 2.0,
-              ),
-              visible: isLoading,
-            ),
           ),
-        );
-      },
-      itemCount: data.length + 1,
-      separatorBuilder: (BuildContext context, int index) => Divider(),
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          titleSpacing: 0.0,
+          floating: true,
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+                (context, index) {
+              if (index < data.length) {
+                return InkWell(
+                  onTap: () {
+                    Toast.show(data[index].dapAnDung, context);
+                  },
+                  child: QuestionItem(data[index], index),
+                );
+              }
+
+              if (error != null) {
+                return ListTile(
+                  title: Text(
+                    'Có lỗi xảy ra, click vào đây để thử lại!',
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(fontSize: 16.0),
+                  ),
+                  isThreeLine: false,
+                  leading: CircleAvatar(
+                    child: Text(':('),
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.redAccent,
+                  ),
+                  onTap: () {
+                    _loadMore();
+                  },
+                );
+              }
+
+              return Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Center(
+                  child: Visibility(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0,
+                    ),
+                    visible: isLoading,
+                  ),
+                ),
+              );
+            },
+            childCount: data.length + 1,
+          ),
+        ),
+      ],
     );
   }
 

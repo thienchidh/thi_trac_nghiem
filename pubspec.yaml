@@ -34,6 +34,9 @@ dependencies:
   flutter_custom_clippers: ^0.1.6
   html_unescape: ^1.0.1+2
   auto_size_text: ^2.0.0+2
+  flip_panel: ^1.0.0
+
+
 
 dev_dependencies:
 
@@ -55,6 +58,7 @@ flutter:
   assets:
     - logo.png
     - user.png
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

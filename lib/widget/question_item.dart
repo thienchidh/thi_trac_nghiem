@@ -44,7 +44,7 @@ class _QuestionState extends State<QuestionItem> {
                 children: <Widget>[
                   CircleAvatar(
                     backgroundColor: Colors.white70,
-                    child: Text("${widget._curIndex + 1}"),
+                    child: Text('${widget._curIndex + 1}'),
                   ),
                   const SizedBox(width: 16.0),
                   Expanded(

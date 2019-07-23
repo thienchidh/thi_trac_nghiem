@@ -179,7 +179,7 @@ class _SearchAppBarDelegate extends SearchDelegate<String> {
   @override
   Widget buildResults(BuildContext context) {
     return Center(
-      child: SizedBox(
+      child: const SizedBox(
         width: 24.0,
         height: 24.0,
         child: CircularProgressIndicator(

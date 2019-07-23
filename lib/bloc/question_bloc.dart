@@ -217,10 +217,17 @@ class QuestionBloc {
       question.addAll(questions);
 
       final int newTime = DateTime.now().millisecondsSinceEpoch;
+      final int totalSleepRecommend = 1500;
+      final int normalSleep = 100;
 
       await Future.delayed(
         Duration(
-          milliseconds: max(0, newTime - oldTime + 100),
+          milliseconds: max(
+              0,
+              newTime -
+                  oldTime +
+                  normalSleep +
+                  (loadFirstPage ? totalSleepRecommend - normalSleep : 0)),
         ),
       );
 

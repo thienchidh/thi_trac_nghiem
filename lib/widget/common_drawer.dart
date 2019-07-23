@@ -12,6 +12,9 @@ class CommonDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyle = TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0);
 
+    final list = user.name.split(' ');
+    final firstCharacterName = list.isNotEmpty ? list.last[0] : '';
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -24,8 +27,14 @@ class CommonDrawer extends StatelessWidget {
               user.maso,
             ),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('assets/user.png'),
+              child: Text(
+                firstCharacterName,
+                style: textStyle,
+              ),
             ),
+            onDetailsPressed: () {
+              print('CommonDrawer.build.onDetailsPressed');
+            },
           ),
           ListTile(
             title: Text(

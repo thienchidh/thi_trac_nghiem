@@ -11,19 +11,16 @@ class AboutApp extends StatelessWidget {
         colors: Colors.red,
       ),
       aboutBoxChildren: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 10.0,
         ),
         Text(
-          "Developed By Pawan Kumar",
-        ),
-        Text(
-          "MTechViral",
+          'Phát triển bởi team Data4U',
         ),
       ],
-      applicationName: 'Trắc Nghiệm',
-      applicationVersion: "1.0.1",
-      applicationLegalese: "Apache License 2.0",
+      applicationName: 'Thi Trắc Nghiệm',
+      applicationVersion: 'Phiên bản 1.0.0',
+      applicationLegalese: 'Apache License 2.0',
     );
   }
 }
