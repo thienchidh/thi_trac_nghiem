@@ -135,9 +135,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   @override
-  void dispose() async {
+  void dispose() {
     _scrollController.dispose();
-    await Future.wait([
+    Future.wait([
       _bloc.dispose(),
       _subscriptionError.cancel(),
       _subscriptionReachMaxItems.cancel(),
@@ -204,14 +204,18 @@ class _SearchScreenState extends State<SearchScreen> {
                 );
               }
 
-              return Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Center(
-                  child: Visibility(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.0,
+              return Visibility(
+                visible: isLoading,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Center(
+                    child: const SizedBox(
+                      width: 24.0,
+                      height: 24.0,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                      ),
                     ),
-                    visible: isLoading,
                   ),
                 ),
               );

@@ -34,7 +34,7 @@ class UIData {
   static const String VERSION_APP = "1.0.0";
 
   //fonts
-  static const String quickFont = 'Montserrat';
+  static const String fontFamily = 'Montserrat';
   static const String ralewayFont = 'Raleway';
   static const String quickBoldFont = 'Montserrat_Bold.otf';
   static const String quickNormalFont = 'Montserrat_Book.otf';
@@ -54,9 +54,10 @@ class UIData {
   static const String verifyImage = '$imageDir/verification.jpg';
 
   //colors
-  static const MaterialColor primaryColor = Colors.blue;
-  static const MaterialColor accentColor = Colors.cyan;
-  static const List<Color> kitGradients = [Colors.cyan, Colors.blue];
+  static const Color primaryColor = Colors.blue;
+  static const MaterialColor primarySwatch = Colors.lime;
+  static const Color accentColor = Colors.cyan;
+  static const List<Color> kitGradients = [primaryColor, accentColor];
 
   //login
   static const String enter_code_label = 'Phone Number';

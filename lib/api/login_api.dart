@@ -30,7 +30,7 @@ class LoginApi {
       )
           .timeout(
         const Duration(
-          seconds: 10,
+          milliseconds: 10000,
         ),
       );
       final results = json.decode(response.body);

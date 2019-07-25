@@ -43,10 +43,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _isLoading ? _buildLoading() : loginBody());
+    return Scaffold(
+      body: _isLoading ? _buildLoading() : loginBody(),
+    );
   }
 
-  loginBody() {
+  Widget loginBody() {
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -58,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  loginHeader() {
+  Widget loginHeader() {
     final primaryColor = UIData.primaryColor;
 
     return Column(
@@ -92,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  loginFields() {
+  Widget loginFields() {
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -223,8 +225,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future _forwardHomeScreen() async {
-    await Navigator.pushReplacementNamed(context, UIData.HOME_ROUTE_NAME);
+  Future<void> _forwardHomeScreen() async {
+    await Navigator.pushReplacementNamed(context, '/${UIData.HOME_ROUTE_NAME}');
   }
 
   Future<bool> _login() async {
@@ -255,15 +257,13 @@ class _LoginScreenState extends State<LoginScreen> {
     _txtEmailController.text = _account.username;
     _txtPasswordController.text = _account.password;
 
-    bool isValid(String x) {
-      return x != null && x.isNotEmpty;
-    }
+    bool isValid(String x) => x != null && x.isNotEmpty;
 
     final int oldTime = DateTime
         .now()
         .millisecondsSinceEpoch;
 
-    if (!UserManagement().isUserLogout) {
+    if (UserManagement().isAutoLogin) {
       bool isLoginSuccess = false;
       if (isValid(username) && isValid(password)) {
         isLoginSuccess = await _login();

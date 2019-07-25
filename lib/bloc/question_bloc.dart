@@ -74,7 +74,7 @@ class QuestionBloc {
   ///
   /// BehaviorSubject of errors, emit null when have no error
   ///
-  final _errorController = BehaviorSubject<Object>(seedValue: null, sync: true);
+  final _errorController = BehaviorSubject<Object>.seeded(null, sync: true);
 
 //  ValueObservable<Object> _errorNullable$;
   Stream<Object> _errorNotNull$; // stream of errors exposed to UI
@@ -83,7 +83,7 @@ class QuestionBloc {
   /// BehaviorSubject and Stream handle first page is loading
   ///
   final _isLoadingFirstPageController =
-      BehaviorSubject<bool>(seedValue: false, sync: true);
+  BehaviorSubject<bool>.seeded(false, sync: true);
   ValueObservable<bool> _isLoadingFirstPage$;
 
   ///
@@ -130,7 +130,7 @@ class QuestionBloc {
     _isLoadingFirstPage$ = _isLoadingFirstPageController.stream;
 
     final Observable<QuestionListState> loadMore = _loadMoreController
-        .throttle(Duration(milliseconds: 50))
+        .throttleTime(Duration(milliseconds: 50))
         .doOnData((_) => print('_loadMoreController emitted...'))
         .where((_) {
           final isLoadingFirstPage = _isLoadingFirstPage$.value;
@@ -160,7 +160,7 @@ class QuestionBloc {
     _questionList$ = Observable.switchLatest(streams)
         .distinct()
         .doOnData((state) => print('state = $state'))
-        .publishValue(seedValue: QuestionListState.initial());
+        .publishValueSeeded(QuestionListState.initial());
 
     _streamSubscription = _questionList$.connect();
   }
@@ -217,8 +217,8 @@ class QuestionBloc {
       question.addAll(questions);
 
       final int newTime = DateTime.now().millisecondsSinceEpoch;
-      final int totalSleepRecommend = 1000;
-      final int normalSleep = 100;
+      final int totalSleepRecommend = 1500;
+      final int normalSleep = 150;
 
       await Future.delayed(
         Duration(
@@ -252,12 +252,14 @@ class QuestionBloc {
     }
   }
 
-  Future<void> dispose() => Future.wait([
-        _streamSubscription.cancel(),
-        _loadAllController.close(),
-        _loadMoreController.close(),
-        _loadFirstPageController.close(),
-        _errorController.close(),
-        _isLoadingFirstPageController.close(),
-      ]);
+  Future<void> dispose() {
+    return Future.wait([
+      _streamSubscription.cancel(),
+      _loadAllController.close(),
+      _loadMoreController.close(),
+      _loadFirstPageController.close(),
+      _errorController.close(),
+      _isLoadingFirstPageController.close(),
+    ]);
+  }
 }

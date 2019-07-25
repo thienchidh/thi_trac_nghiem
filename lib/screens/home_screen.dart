@@ -32,10 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, snapshot) {
         return snapshot.hasData
             ? CustomScrollView(
-                slivers: <Widget>[
-                  _appBar(),
-                  _bodyGrid(context, snapshot.data),
-                ],
+          physics: BouncingScrollPhysics(),
+          slivers: <Widget>[
+            _appBar(),
+            _bodyGrid(context, snapshot.data),
+          ],
               )
             : Center(
                 child: CircularProgressIndicator(),
@@ -63,7 +64,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           children: <Widget>[
             FlutterLogo(
-              colors: Colors.yellow,
+              colors: UIData.primarySwatch,
+              textColor: Colors.white,
             ),
             SizedBox(
               width: 10.0,
@@ -205,7 +207,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.pushNamed(context, '/${menu.items[i]}');
+                        Navigator.pushNamed(
+                          context,
+                          '/${menu.items[i]}',
+                          arguments:
+                          1000, // TODO this is example, need to update
+                        );
                       },
                     ),
                   );

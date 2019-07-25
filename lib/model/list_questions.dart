@@ -43,6 +43,33 @@ class Question {
   String thuocChuong;
   String answerOfUser;
 
+  List<String> _listDapAn = [];
+
+  int _computeIndex(String x) {
+    switch (x?.toLowerCase()) {
+      case 'a':
+        return 0;
+      case 'b':
+        return 1;
+      case 'c':
+        return 2;
+      case 'd':
+        return 3;
+      default:
+    }
+    return -1;
+  }
+
+  String getFullAnswerOfUser() {
+    final index = _computeIndex(answerOfUser);
+    return index == -1 ? '_' : _listDapAn[index];
+  }
+
+  String getFullCorrectAnswer() {
+    final index = _computeIndex(dapAnDung);
+    return index == -1 ? '_' : _listDapAn[index];
+  }
+
   Question.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     content = json['content'];
@@ -58,11 +85,17 @@ class Question {
     rate = json['rate'];
     thuocChuong = json['thuoc_chuong'];
 
+    _compute();
+  }
+
+  Future<void> _compute() async {
     if (int.parse(direction) == -1) {
       dapAnDung = dapAnDung[int.parse(position) - 1];
     } else {
       dapAnDung = dapAnDung[dapAnDung.length - int.parse(position)];
     }
+
+    _listDapAn..add(dapAnA)..add(dapAnB)..add(dapAnC)..add(dapAnD);
   }
 
   Map<String, dynamic> toJson() {

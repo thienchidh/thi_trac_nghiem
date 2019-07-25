@@ -6,7 +6,7 @@ import 'package:thi_trac_nghiem/utils/ui_data.dart';
 class Timer extends StatefulWidget {
   @override
   _TimerState createState() {
-    return new _TimerState();
+    return _TimerState();
   }
 }
 

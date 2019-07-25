@@ -21,7 +21,7 @@ class CheckAnswersScreen extends StatelessWidget {
       body: Stack(
         children: <Widget>[
           ClipPath(
-            clipper: WaveClipperTwo(),
+            clipper: WaveClipperOne(),
             child: Container(
               decoration: BoxDecoration(color: UIData.primaryColor),
               height: 200,
@@ -43,7 +43,7 @@ class CheckAnswersScreen extends StatelessWidget {
         child: Text('Xong'),
         onPressed: () {
           Navigator.of(context)
-              .popUntil(ModalRoute.withName(Navigator.defaultRouteName));
+              .popUntil(ModalRoute.withName('/${UIData.HOME_ROUTE_NAME}'));
         },
       );
     }
@@ -64,7 +64,7 @@ class CheckAnswersScreen extends StatelessWidget {
             ),
             const SizedBox(height: 5.0),
             Text(
-              question.dapAnDung,
+              question.getFullAnswerOfUser(),
               style: TextStyle(
                   color: correct ? Colors.green : Colors.red,
                   fontSize: 18.0,
@@ -78,7 +78,7 @@ class CheckAnswersScreen extends StatelessWidget {
                       children: [
                         TextSpan(text: 'Đáp án: '),
                         TextSpan(
-                          text: question.dapAnDung,
+                          text: question.getFullCorrectAnswer(),
                           style: TextStyle(fontWeight: FontWeight.w500),
                         )
                       ],

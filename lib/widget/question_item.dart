@@ -55,6 +55,10 @@ class _QuestionState extends State<QuestionItem> {
                       style: _questionStyle,
                     ),
                   ),
+                  CircleAvatar(
+                    backgroundColor: Colors.white70,
+                    child: Icon(Icons.favorite, size: 50.0, color: Colors.red),
+                  ),
                 ],
               ),
               const SizedBox(height: 20.0),

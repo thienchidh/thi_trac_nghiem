@@ -89,15 +89,13 @@ class CommonDrawer extends StatelessWidget {
                       FlatButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          // set auto login = false
-                          UserManagement().isUserLogout = true;
+                          UserManagement().isAutoLogin = false;
 
-                          while (Navigator.canPop(context)) {
-                            Navigator.pop(context);
-                          }
-                          Navigator.pushReplacementNamed(
+                          // TODO
+                          Navigator.pushNamedAndRemoveUntil(
                             context,
                             '/${UIData.LOGIN_ROUTE_NAME}',
+                                (_) => false,
                           );
                         },
                       ),

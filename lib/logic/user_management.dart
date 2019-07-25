@@ -8,7 +8,8 @@ class UserManagement {
 
   UserManagement._(); // private constructor
 
-  bool isUserLogout = false;
+  // for auto login
+  bool isAutoLogin = true;
   User _curUser;
 
   User get curUser => _curUser;

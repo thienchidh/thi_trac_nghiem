@@ -4,12 +4,17 @@ import 'package:thi_trac_nghiem/screens/check_answers_screen.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class FinishedScreen extends StatelessWidget {
-  final List<Question> questions;
+  static const nameRouter = '/FinishedScreen';
 
-  FinishedScreen({Key key, @required this.questions}) : super(key: key);
+  FinishedScreen({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final List<Question> questions = ModalRoute
+        .of(context)
+        .settings
+        .arguments;
+
     int correct = 0;
     questions.forEach((q) {
       if (q.dapAnDung == q.answerOfUser) {
@@ -90,7 +95,9 @@ class FinishedScreen extends StatelessWidget {
                 children: <Widget>[
                   RaisedButton(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 20.0),
+                      horizontal: 16.0,
+                      vertical: 20.0,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
