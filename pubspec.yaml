@@ -40,7 +40,7 @@ dependencies:
   equatable: ^0.2.0
   wave: ^0.0.8
   flutter_bloc: ^0.20.0
-
+  intl: ^0.15.8
 
 
 

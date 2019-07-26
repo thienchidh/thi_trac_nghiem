@@ -42,8 +42,10 @@ class CheckAnswersScreen extends StatelessWidget {
       return RaisedButton(
         child: Text('Xong'),
         onPressed: () {
-          Navigator.of(context)
-              .popUntil(ModalRoute.withName('/${UIData.HOME_ROUTE_NAME}'));
+          Navigator.popUntil(
+            context,
+            ModalRoute.withName('/${UIData.HOME_ROUTE_NAME}'),
+          );
         },
       );
     }
@@ -64,7 +66,7 @@ class CheckAnswersScreen extends StatelessWidget {
             ),
             const SizedBox(height: 5.0),
             Text(
-              question.getFullAnswerOfUser(),
+              question.answerOfUser,
               style: TextStyle(
                   color: correct ? Colors.green : Colors.red,
                   fontSize: 18.0,
@@ -78,7 +80,7 @@ class CheckAnswersScreen extends StatelessWidget {
                       children: [
                         TextSpan(text: 'Đáp án: '),
                         TextSpan(
-                          text: question.getFullCorrectAnswer(),
+                          text: question.dapAnDung,
                           style: TextStyle(fontWeight: FontWeight.w500),
                         )
                       ],

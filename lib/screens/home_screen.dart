@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thi_trac_nghiem/bloc/menu_bloc.dart';
+import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/menu.dart';
+import 'package:thi_trac_nghiem/utils/dialog_ultis.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
-import 'package:thi_trac_nghiem/widget/about_tile.dart';
 import 'package:thi_trac_nghiem/widget/common_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,32 +17,40 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => _willPopCallback(context),
-      child: Scaffold(
-        key: _scaffoldState,
-        drawer: CommonDrawer(),
-        body: _bodySliverList(context),
-      ),
+    return Scaffold(
+      key: _scaffoldState,
+      drawer: CommonDrawer(),
+      body: _bodySliverList(context),
     );
   }
 
   Widget _bodySliverList(BuildContext context) {
-    return StreamBuilder<List<Menu>>(
-      stream: MenuBloc().menuItems,
-      builder: (context, snapshot) {
-        return snapshot.hasData
-            ? CustomScrollView(
-          physics: BouncingScrollPhysics(),
-          slivers: <Widget>[
-            _appBar(),
-            _bodyGrid(context, snapshot.data),
-          ],
-              )
-            : Center(
-                child: CircularProgressIndicator(),
-              );
+    final user = UserManagement().curUser;
+    return WillPopScope(
+      onWillPop: () {
+        return DialogUltis().showAlertDialog(
+          context,
+          title: 'Đăng xuất',
+          content:
+          'Tài khoản \"${user.name}\" sẽ được đăng xuất khỏi thiết bị này?',
+        );
       },
+      child: StreamBuilder<List<Menu>>(
+        stream: MenuBloc().menuItems,
+        builder: (context, snapshot) {
+          return snapshot.hasData
+              ? CustomScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            slivers: <Widget>[
+              _appBar(),
+              _bodyGrid(context, snapshot.data),
+            ],
+          )
+              : Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
     );
   }
 
@@ -84,7 +93,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget itemMenuStack(BuildContext context, Menu menu) {
     return InkWell(
-      onTap: () => _showModalBottomSheet(context, menu),
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          '/${menu.item}',
+          arguments: 120, // TODO this is example, need to update
+        );
+      },
       splashColor: Colors.orange,
       child: Card(
         clipBehavior: Clip.antiAlias,
@@ -160,91 +175,6 @@ class _HomeScreenState extends State<HomeScreen> {
             itemMenuStack(context, menu[index]),
         childCount: menu.length,
       ),
-    );
-  }
-
-  Widget _header() {
-    return Ink(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: UIData.kitGradients,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            CircleAvatar(
-              radius: 25.0,
-              backgroundImage: AssetImage(UIData.pkImage),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showModalBottomSheet(BuildContext context, Menu menu) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            _header(),
-            Expanded(
-              child: ListView.builder(
-                shrinkWrap: false,
-                itemCount: menu.items.length,
-                itemBuilder: (context, i) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: ListTile(
-                      title: Text(
-                        menu.items[i],
-                      ),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pushNamed(
-                          context,
-                          '/${menu.items[i]}',
-                          arguments:
-                          1000, // TODO this is example, need to update
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
-            AboutApp(),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<bool> _willPopCallback(BuildContext context) async {
-    return showDialog<bool>(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          content: Text("Bạn có muốn thoát?"),
-          title: Text("Xác nhận thoát!"),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("Không"),
-              onPressed: () => Navigator.pop(context, false),
-            ),
-            FlatButton(
-              child: Text("Đồng ý"),
-              onPressed: () => Navigator.pop(context, true),
-            ),
-          ],
-        );
-      },
     );
   }
 }

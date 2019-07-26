@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/account.dart';
-import 'package:thi_trac_nghiem/utils/ui_data.dart';
+import 'package:thi_trac_nghiem/utils/dialog_ultis.dart';
 import 'package:thi_trac_nghiem/widget/about_tile.dart';
 
 class CommonDrawer extends StatelessWidget {
@@ -76,38 +76,12 @@ class CommonDrawer extends StatelessWidget {
               color: Colors.redAccent,
             ),
             onTap: () {
-              return showDialog<bool>(
-                context: context,
-                builder: (_) {
-                  return AlertDialog(
-                    title: Text('Đăng xuất'),
-                    content: Text(
-                      'Tài khoản \'${user
-                          .name}\' sẽ được đăng xuất khỏi thiết bị này?',
-                    ),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text('Yes'),
-                        onPressed: () {
-                          UserManagement().isAutoLogin = false;
-
-                          // TODO
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/${UIData.LOGIN_ROUTE_NAME}',
-                                (_) => false,
-                          );
-                        },
-                      ),
-                      FlatButton(
-                        child: Text('No'),
-                        onPressed: () {
-                          Navigator.pop(context, false);
-                        },
-                      ),
-                    ],
-                  );
-                },
+              return DialogUltis().showAlertDialog(
+                context,
+                title: 'Đăng xuất',
+                content:
+                'Tài khoản \"${user
+                    .name}\" sẽ được đăng xuất khỏi thiết bị này?',
               );
             },
           ),

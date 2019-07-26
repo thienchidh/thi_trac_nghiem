@@ -28,6 +28,8 @@ class ListQuestions {
 }
 
 class Question {
+  static const undefinedAnswer = '_';
+
   String id;
   String content;
   String dapAnA;
@@ -41,9 +43,11 @@ class Question {
   String dapAnDung;
   String rate;
   String thuocChuong;
-  String answerOfUser;
 
-  List<String> _listDapAn = [];
+  String answerOfUser;
+  bool isFavorite;
+
+  List<String> listDapAn = [];
 
   int _computeIndex(String x) {
     switch (x?.toLowerCase()) {
@@ -58,16 +62,6 @@ class Question {
       default:
     }
     return -1;
-  }
-
-  String getFullAnswerOfUser() {
-    final index = _computeIndex(answerOfUser);
-    return index == -1 ? '_' : _listDapAn[index];
-  }
-
-  String getFullCorrectAnswer() {
-    final index = _computeIndex(dapAnDung);
-    return index == -1 ? '_' : _listDapAn[index];
   }
 
   Question.fromJson(Map<String, dynamic> json) {
@@ -85,17 +79,23 @@ class Question {
     rate = json['rate'];
     thuocChuong = json['thuoc_chuong'];
 
-    _compute();
+    _computeAndInit();
   }
 
-  Future<void> _compute() async {
-    if (int.parse(direction) == -1) {
-      dapAnDung = dapAnDung[int.parse(position) - 1];
-    } else {
-      dapAnDung = dapAnDung[dapAnDung.length - int.parse(position)];
-    }
+  void _computeAndInit() {
+    isFavorite = false;
+    answerOfUser = undefinedAnswer;
 
-    _listDapAn..add(dapAnA)..add(dapAnB)..add(dapAnC)..add(dapAnD);
+    final pos = int.parse(position);
+
+    final choice = (int.parse(direction) == -1)
+        ? dapAnDung[pos - 1]
+        : dapAnDung[dapAnDung.length - pos];
+
+    listDapAn..add(dapAnA)..add(dapAnB)..add(dapAnC)..add(dapAnD);
+
+    final index = _computeIndex(choice);
+    dapAnDung = listDapAn[index];
   }
 
   Map<String, dynamic> toJson() {
@@ -119,22 +119,22 @@ class Question {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Question &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          content == other.content &&
-          dapAnA == other.dapAnA &&
-          dapAnB == other.dapAnB &&
-          dapAnC == other.dapAnC &&
-          dapAnD == other.dapAnD &&
-          dapAnE == other.dapAnE &&
-          dapAnF == other.dapAnF &&
-          direction == other.direction &&
-          position == other.position &&
-          dapAnDung == other.dapAnDung &&
-          rate == other.rate &&
-          thuocChuong == other.thuocChuong &&
-          answerOfUser == other.answerOfUser;
+          other is Question &&
+              runtimeType == other.runtimeType &&
+              id == other.id &&
+              content == other.content &&
+              dapAnA == other.dapAnA &&
+              dapAnB == other.dapAnB &&
+              dapAnC == other.dapAnC &&
+              dapAnD == other.dapAnD &&
+              dapAnE == other.dapAnE &&
+              dapAnF == other.dapAnF &&
+              direction == other.direction &&
+              position == other.position &&
+              dapAnDung == other.dapAnDung &&
+              rate == other.rate &&
+              thuocChuong == other.thuocChuong &&
+              answerOfUser == other.answerOfUser;
 
   @override
   int get hashCode =>

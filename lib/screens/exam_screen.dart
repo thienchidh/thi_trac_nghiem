@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -6,13 +7,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:thi_trac_nghiem/api/api_question_data_source.dart';
 import 'package:thi_trac_nghiem/bloc/question_bloc.dart';
 import 'package:thi_trac_nghiem/bloc/timer_bloc.dart';
-import 'package:thi_trac_nghiem/bloc/timer_event.dart';
+import 'package:thi_trac_nghiem/logic/action_timer.dart';
 import 'package:thi_trac_nghiem/logic/ticker.dart';
 import 'package:thi_trac_nghiem/model/enums.dart';
+import 'package:thi_trac_nghiem/model/list_questions.dart';
 import 'package:thi_trac_nghiem/screens/submit_answer_screen.dart';
-import 'package:thi_trac_nghiem/screens/timer_screen.dart';
+import 'package:thi_trac_nghiem/utils/dialog_ultis.dart';
 import 'package:thi_trac_nghiem/widget/common_drawer.dart';
+import 'package:thi_trac_nghiem/widget/current_questions_drawer.dart';
 import 'package:thi_trac_nghiem/widget/question_item.dart';
+import 'package:thi_trac_nghiem/widget/timer_widget.dart';
 
 class ExamScreen extends StatefulWidget {
   @override
@@ -30,7 +34,9 @@ class _ExamScreenState extends State<ExamScreen> {
 
   bool _isReachMaxItem = false;
 
-  _ExamScreenState() {
+  final List<Question> _questions;
+
+  _ExamScreenState() : _questions = List<Question>() {
     _bloc = QuestionBloc(QuestionDataSource());
 
     // listen error, reach max items
@@ -58,19 +64,21 @@ class _ExamScreenState extends State<ExamScreen> {
       appBar: AppBar(
         title: BlocProvider(
           builder: (context) {
-            TimerBloc timerBloc = TimerBloc(
+            return TimerBloc(
               ticker: Ticker(),
-              duration: 86400, // TODO example
+              duration: 120, // TODO example
             );
-            timerBloc
-                .dispatch(Start(duration: timerBloc.currentState.duration));
-            return timerBloc;
           },
-          child: TimerMini(),
+          child: TimerWidget(
+            actions: ActionsTimerRunningExam(),
+          ),
         ),
       ),
       drawer: CommonDrawer(),
-      endDrawer: CommonDrawer(),
+      endDrawer: CurrentQuestionsDrawer(
+        questions: _questions,
+        onSelectQuestionCallBack: jumpToPage,
+      ),
       body: Container(
         child: StreamBuilder<QuestionListState>(
           stream: _bloc.questionList,
@@ -131,62 +139,94 @@ class _ExamScreenState extends State<ExamScreen> {
   }
 
   Widget _buildPage(AsyncSnapshot<QuestionListState> snapshot) {
-    final data = snapshot.data.question;
-    final isLoading = snapshot.data.isLoading;
-    final error = snapshot.data.error;
+    final UnmodifiableListView<Question> data = snapshot.data.question;
+    final bool isLoading = snapshot.data.isLoading;
+    final Object error = snapshot.data.error;
 
-    return PageView.builder(
-      // Changes begin here
-      controller: _controller,
-      scrollDirection: Axis.vertical,
-      itemCount: data.length + 1,
-      itemBuilder: (context, index) {
-        if (index < data.length) {
-          return QuestionItem(data[index], index);
-        }
-        if (!_isReachMaxItem) {
-          _loadMore(); // item in last index => load more data
-        } else {
-          // TODO check no answer, ...
-          return SubmitScreen(
-            data: data,
-            typeExam: TypeExam.testTest,
-          );
-        }
+    _questions.clear();
+    _questions.addAll(data);
 
-        if (error != null) {
-          return ListTile(
-            title: Text(
-              'Có lỗi xảy ra, click vào đây để thử lại!',
-              style: Theme.of(context).textTheme.body1.copyWith(fontSize: 16.0),
-            ),
-            isThreeLine: false,
-            leading: CircleAvatar(
-              child: Text(':('),
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.redAccent,
-            ),
-            onTap: () {
-              _loadMore();
-            },
-          );
-        }
-        return Visibility(
-          visible: isLoading,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Center(
-              child: const SizedBox(
-                width: 24.0,
-                height: 24.0,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.0,
+    return WillPopScope(
+      onWillPop: () {
+        return DialogUltis().showAlertDialog(
+          context,
+          title: 'Thoát?',
+          content: 'Bạn có muốn thoát?',
+        );
+      },
+      child: PageView.builder(
+        controller: _controller,
+        scrollDirection: Axis.horizontal,
+        itemCount: data.length + 1,
+        itemBuilder: (context, index) {
+          if (index < data.length) {
+            return QuestionItem(data[index], index);
+          }
+          if (!_isReachMaxItem) {
+            _loadMore(); // item in last index => load more data
+          } else {
+            // TODO check no answer, ...
+            return SubmitScreen(
+              data: data,
+              typeExam: TypeExam.testTest,
+            );
+          }
+
+          if (error != null) {
+            return ListTile(
+              title: Text(
+                'Có lỗi xảy ra, click vào đây để thử lại!',
+                style:
+                Theme
+                    .of(context)
+                    .textTheme
+                    .body1
+                    .copyWith(fontSize: 16.0),
+              ),
+              isThreeLine: false,
+              leading: CircleAvatar(
+                child: Text(':('),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.redAccent,
+              ),
+              onTap: () {
+                _loadMore();
+              },
+            );
+          }
+          return Visibility(
+            visible: isLoading,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Center(
+                child: const SizedBox(
+                  width: 24.0,
+                  height: 24.0,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.0,
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
+  }
+
+  Future<void> jumpToPage(index) async {
+    print('_ExamScreenState.jumpToPage: $index');
+    final scaffoldState = _scaffoldKey.currentState;
+
+    final isDrawerOpen = scaffoldState.isDrawerOpen;
+    if (isDrawerOpen) {
+      Navigator.pop(context);
+    }
+    final isEndDrawerOpen = scaffoldState.isEndDrawerOpen;
+    if (isEndDrawerOpen) {
+      Navigator.pop(context);
+    }
+
+    _controller.jumpToPage(index);
   }
 }

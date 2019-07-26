@@ -4,7 +4,7 @@ class Menu {
   String title;
   IconData icon;
   String image;
-  List<String> items;
+  String item;
   BuildContext context;
   Color menuColor;
   String toolTip;
@@ -13,7 +13,7 @@ class Menu {
     this.title,
     this.icon,
     this.image,
-    this.items,
+    this.item,
     this.context,
     this.menuColor = Colors.black,
     this.toolTip,

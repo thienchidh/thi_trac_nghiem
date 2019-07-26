@@ -226,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _forwardHomeScreen() async {
-    await Navigator.pushReplacementNamed(context, '/${UIData.HOME_ROUTE_NAME}');
+    await Navigator.pushNamed(context, '/${UIData.HOME_ROUTE_NAME}');
   }
 
   Future<bool> _login() async {

@@ -8,6 +8,7 @@ import 'package:thi_trac_nghiem/screens/finished_screen.dart';
 import 'package:thi_trac_nghiem/screens/home_screen.dart';
 import 'package:thi_trac_nghiem/screens/login_screen.dart';
 import 'package:thi_trac_nghiem/screens/search_screen.dart';
+import 'package:thi_trac_nghiem/screens/setting_exam_screen.dart';
 import 'package:thi_trac_nghiem/screens/timer_screen.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
@@ -65,19 +66,24 @@ class _MyAppState extends State<MyApp> {
         '/${UIData.LOGIN_ROUTE_NAME}': (_) => LoginScreen(),
         '/${UIData.HOME_ROUTE_NAME}': (_) => HomeScreen(),
         '/${UIData.EXAM_ROUTE_NAME}': (_) => ExamScreen(),
-        '/${UIData.NOT_FOUND_ROUTE_NAME}': (_) => HomeScreen(),
         '/${UIData.PRACTICE_ROUTE_NAME}': (_) => SearchScreen(),
-        '/${UIData.HISTORY_ROUTE_NAME}': (_) => HomeScreen(),
-        '/${UIData.SUPPORT_ROUTE_NAME}': (_) => HomeScreen(),
-        '/${UIData.SETTINGS_EXAM_ROUTE_NAME}': (_) => TimerScreen(),
-        '/${UIData.ABOUT_US_ROUTE_NAME}': (_) => HomeScreen(),
-        '/${UIData.ADVANCE_ROUTE_NAME}': (_) => HomeScreen(),
+        '/${UIData.ADVANCE_ROUTE_NAME}': (_) => TimerScreen(),
+        '/${UIData.SETTINGS_EXAM_ROUTE_NAME}': (_) => SettingExamScreen(),
+//        '/${UIData.FAVORITE_ROUTE_NAME}': (_) => SearchScreen(),
+//        '/${UIData.NOT_FOUND_ROUTE_NAME}': (_) => HomeScreen(),
+//        '/${UIData.HISTORY_ROUTE_NAME}': (_) => HomeScreen(),
+//        '/${UIData.SUPPORT_ROUTE_NAME}': (_) => HomeScreen(),
+//        '/${UIData.ABOUT_US_ROUTE_NAME}': (_) => TimerScreen(),
         FinishedScreen.nameRouter: (_) => FinishedScreen(),
       },
       onUnknownRoute: (RouteSettings rs) {
         return MaterialPageRoute(
           builder: (context) {
-            return Container();
+            return Scaffold(
+              body: Center(
+                child: Text('Not found!'),
+              ),
+            );
           },
         );
       },

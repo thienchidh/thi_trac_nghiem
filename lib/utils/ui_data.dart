@@ -55,7 +55,7 @@ class UIData {
 
   //colors
   static const Color primaryColor = Colors.blue;
-  static const MaterialColor primarySwatch = Colors.lime;
+  static const Color primarySwatch = Colors.lime;
   static const Color accentColor = Colors.cyan;
   static const List<Color> kitGradients = [primaryColor, accentColor];
 

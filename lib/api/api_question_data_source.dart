@@ -10,15 +10,18 @@ import 'package:thi_trac_nghiem/model/list_questions.dart';
 class QuestionDataSource implements IQuestionDataSource {
   static final _singleton = QuestionDataSource._();
 
+  final _baseUrl = 'http://103.81.86.156:8080';
+
   final Client _client;
-  final Map<String, ListQuestions> _cache;
-  final baseUrl = 'http://103.81.86.156:8080';
+  final Map<String, ListQuestions> _cacheListQuestion;
+  final Map<String, Question> _cacheQuestion;
 
   factory QuestionDataSource() => _singleton;
 
   QuestionDataSource._()
       : _client = Client(),
-        _cache = HashMap(),
+        _cacheListQuestion = HashMap(),
+        _cacheQuestion = HashMap(),
         super();
 
   String _startId;
@@ -43,7 +46,7 @@ class QuestionDataSource implements IQuestionDataSource {
     }
 
     final key = _makeKeyCache(_keyWord, _startId);
-    if (_cache.containsKey(key)) {
+    if (_cacheListQuestion.containsKey(key)) {
       final cacheResult = _fetchCacheResult(key);
       return cacheResult != null ? cacheResult : _fetchNetworkResult();
     }
@@ -51,23 +54,35 @@ class QuestionDataSource implements IQuestionDataSource {
   }
 
   Future<List<Question>> _fetchCacheResult(key) async {
-    ListQuestions listQuestions = _cache[key];
+    ListQuestions listQuestions = _cacheListQuestion[key];
     _startId = listQuestions.nextId;
     return listQuestions.listData;
   }
 
   Future<List<Question>> _fetchNetworkResult() async {
     final path =
-        '$baseUrl/apiThitracnghiem/api01/General?doing=$_doing&startId=$_startId&key=$_keyWord';
+        '$_baseUrl/apiThitracnghiem/api01/General?doing=$_doing&startId=$_startId&key=$_keyWord';
     try {
       final response = await _client.get('$path');
       final questions = ListQuestions.fromJson(json.decode(response.body));
 
       String key = _makeKeyCache(_keyWord, _startId);
-      _cache[key] = questions;
+      _cacheListQuestion[key] = questions;
+
+      final list = questions.listData;
+
+      for (int i = 0; i < list.length; i++) {
+        final id = list[i].id;
+
+        if (_cacheQuestion.containsKey(id)) {
+          list[i] = _cacheQuestion[id];
+        } else {
+          _cacheQuestion[id] = list[i];
+        }
+      }
 
       _startId = questions.nextId;
-      return questions.listData;
+      return list;
     } catch (e) {
       print(e);
       throw StateError('$e');
