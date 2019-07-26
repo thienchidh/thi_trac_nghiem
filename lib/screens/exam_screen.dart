@@ -4,13 +4,13 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thi_trac_nghiem/api/api_question_data_source.dart';
-import 'package:thi_trac_nghiem/bloc/question_bloc.dart';
+import 'package:thi_trac_nghiem/api/question_data_source.dart';
+import 'package:thi_trac_nghiem/bloc/data_bloc.dart';
 import 'package:thi_trac_nghiem/bloc/timer_bloc.dart';
 import 'package:thi_trac_nghiem/logic/action_timer.dart';
 import 'package:thi_trac_nghiem/logic/ticker.dart';
+import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 import 'package:thi_trac_nghiem/model/enums.dart';
-import 'package:thi_trac_nghiem/model/list_questions.dart';
 import 'package:thi_trac_nghiem/screens/submit_answer_screen.dart';
 import 'package:thi_trac_nghiem/utils/dialog_ultis.dart';
 import 'package:thi_trac_nghiem/widget/common_drawer.dart';
@@ -26,7 +26,7 @@ class ExamScreen extends StatefulWidget {
 class _ExamScreenState extends State<ExamScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  QuestionBloc _bloc;
+  DataBloc _bloc;
   StreamSubscription<void> _subscriptionReachMaxItems;
   StreamSubscription<Object> _subscriptionError;
 
@@ -37,7 +37,7 @@ class _ExamScreenState extends State<ExamScreen> {
   final List<Question> _questions;
 
   _ExamScreenState() : _questions = List<Question>() {
-    _bloc = QuestionBloc(QuestionDataSource());
+    _bloc = DataBloc<Question>(QuestionDataSource());
 
     // listen error, reach max items
     _subscriptionReachMaxItems =
@@ -80,10 +80,10 @@ class _ExamScreenState extends State<ExamScreen> {
         onSelectQuestionCallBack: jumpToPage,
       ),
       body: Container(
-        child: StreamBuilder<QuestionListState>(
+        child: StreamBuilder<DataListState>(
           stream: _bloc.questionList,
-          builder: (BuildContext context,
-              AsyncSnapshot<QuestionListState> snapshot) {
+          builder:
+              (BuildContext context, AsyncSnapshot<DataListState> snapshot) {
             if (snapshot.hasError) {
               return Center(
                 child: Text('Error ${snapshot.error}'),
@@ -138,8 +138,8 @@ class _ExamScreenState extends State<ExamScreen> {
         ?.closed;
   }
 
-  Widget _buildPage(AsyncSnapshot<QuestionListState> snapshot) {
-    final UnmodifiableListView<Question> data = snapshot.data.question;
+  Widget _buildPage(AsyncSnapshot<DataListState> snapshot) {
+    final UnmodifiableListView<Question> data = snapshot.data.listData;
     final bool isLoading = snapshot.data.isLoading;
     final Object error = snapshot.data.error;
 

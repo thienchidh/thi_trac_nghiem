@@ -1,50 +1,30 @@
 class Account {
-  String _username;
-  String _password;
-  bool _isStudent;
+  String username;
+  String password;
+  bool isStudent;
 
   Account({
-    username,
-    password,
-    isStudent,
-  })  : _username = username != null ? username : '',
-        _password = password != null ? password : '',
-        _isStudent = isStudent != null ? isStudent : true;
-
-  bool get isStudent => _isStudent;
-
-  set isStudent(bool value) {
-    _isStudent = value;
-  }
-
-  String get password => _password;
-
-  set password(String value) {
-    _password = value;
-  }
-
-  String get username => _username;
-
-  set username(String value) {
-    _username = value;
-  }
+    this.username = '',
+    this.password = '',
+    this.isStudent = true,
+  });
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Account &&
           runtimeType == other.runtimeType &&
-          _username == other._username &&
-          _password == other._password &&
-          _isStudent == other._isStudent;
+          username == other.username &&
+          password == other.password &&
+          isStudent == other.isStudent;
 
   @override
   int get hashCode =>
-      _username.hashCode ^ _password.hashCode ^ _isStudent.hashCode;
+      username.hashCode ^ password.hashCode ^ isStudent.hashCode;
 
   @override
   String toString() {
-    return 'Account{_username: $_username, _password: $_password, _isStudent: $_isStudent}';
+    return 'Account{_username: $username, _password: $password, _isStudent: $isStudent}';
   }
 }
 

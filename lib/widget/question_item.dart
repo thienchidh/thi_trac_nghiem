@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
-import 'package:thi_trac_nghiem/model/list_questions.dart';
+import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 import 'package:toast/toast.dart';
 

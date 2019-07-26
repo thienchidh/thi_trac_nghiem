@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:thi_trac_nghiem/logic/user_management.dart';
-import 'package:thi_trac_nghiem/model/account.dart';
+import 'package:thi_trac_nghiem/model/api_model/account.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 import 'package:toast/toast.dart';
 
@@ -241,53 +241,55 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _initialize() async {
-    Map<String, String> map = await storage.readAll();
+    try {
+      Map<String, String> map = await storage.readAll();
 
-    String username = map['username'];
-    String password = map['password'];
-    bool isStudent = map['isStudent'] == 'true';
+      String username = map['username'];
+      String password = map['password'];
+      bool isStudent = map['isStudent'] == 'true';
 
-    setState(() {
-      _account = Account(
-        username: username,
-        password: password,
-        isStudent: isStudent,
-      );
-    });
-    _txtEmailController.text = _account.username;
-    _txtPasswordController.text = _account.password;
+      setState(() {
+        _account = Account(
+          username: username,
+          password: password,
+          isStudent: isStudent,
+        );
+      });
+      _txtEmailController.text = _account.username;
+      _txtPasswordController.text = _account.password;
 
-    bool isValid(String x) => x != null && x.isNotEmpty;
+      bool isValid(String x) => x != null && x.isNotEmpty;
 
-    final int oldTime = DateTime
-        .now()
-        .millisecondsSinceEpoch;
-
-    if (UserManagement().isAutoLogin) {
-      bool isLoginSuccess = false;
-      if (isValid(username) && isValid(password)) {
-        isLoginSuccess = await _login();
-      }
-
-      final int newTime = DateTime
+      final int oldTime = DateTime
           .now()
           .millisecondsSinceEpoch;
-      final int totalSleepRecommend = 3000;
 
-      await Future.delayed(
-        Duration(
-          milliseconds: max(0, newTime - oldTime + totalSleepRecommend),
-        ),
-      );
+      if (UserManagement().isAutoLogin) {
+        bool isLoginSuccess = false;
+        if (isValid(username) && isValid(password)) {
+          isLoginSuccess = await _login();
+        }
 
-      if (isLoginSuccess) {
-        await _forwardHomeScreen();
+        final int newTime = DateTime
+            .now()
+            .millisecondsSinceEpoch;
+        final int totalSleepRecommend = 3000;
+
+        await Future.delayed(
+          Duration(
+            milliseconds: max(0, newTime - oldTime + totalSleepRecommend),
+          ),
+        );
+
+        if (isLoginSuccess) {
+          await _forwardHomeScreen();
+        }
       }
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   Widget _buildLoading() {

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:thi_trac_nghiem/model/account.dart';
+import 'package:thi_trac_nghiem/model/api_model/account.dart';
 
 class LoginApi {
   static final _singleton = LoginApi._();

@@ -152,9 +152,4 @@ class Question {
       rate.hashCode ^
       thuocChuong.hashCode ^
       answerOfUser.hashCode;
-
-  @override
-  String toString() {
-    return 'Question{id: $id}';
-  }
 }

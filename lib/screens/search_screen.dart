@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:synchronized/synchronized.dart';
-import 'package:thi_trac_nghiem/api/api_question_data_source.dart';
-import 'package:thi_trac_nghiem/bloc/question_bloc.dart';
+import 'package:thi_trac_nghiem/api/question_data_source.dart';
+import 'package:thi_trac_nghiem/bloc/data_bloc.dart';
+import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 import 'package:thi_trac_nghiem/widget/common_drawer.dart';
 import 'package:thi_trac_nghiem/widget/question_item.dart';
 import 'package:thi_trac_nghiem/widget/search_bar.dart';
@@ -24,15 +25,15 @@ class _SearchScreenState extends State<SearchScreen> {
   static const _offsetVisibleThreshold = 50;
 
   ///
-  /// pass [QuestionDataSource] to [QuestionBloc]'s constructor
+  /// pass [QuestionDataSource] to [DataBloc]'s constructor
   ///
-  QuestionBloc _bloc;
+  DataBloc _bloc;
   StreamSubscription<void> _subscriptionReachMaxItems;
   StreamSubscription<Object> _subscriptionError;
   bool isShowAppbar;
 
   _SearchScreenState({this.isShowAppbar = true}) {
-    _bloc = QuestionBloc(QuestionDataSource());
+    _bloc = DataBloc<Question>(QuestionDataSource());
 
     // listen error, reach max items
     _subscriptionReachMaxItems =
@@ -109,10 +110,10 @@ class _SearchScreenState extends State<SearchScreen> {
       body: RefreshIndicator(
         child: Container(
           constraints: BoxConstraints.expand(),
-          child: StreamBuilder<QuestionListState>(
+          child: StreamBuilder<DataListState>(
             stream: _bloc.questionList,
-            builder: (BuildContext context,
-                AsyncSnapshot<QuestionListState> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<DataListState> snapshot) {
               if (snapshot.hasError) {
                 return Center(
                   child: Text('Error ${snapshot.error}'),
@@ -146,8 +147,8 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  Widget _buildList(AsyncSnapshot<QuestionListState> snapshot) {
-    final data = snapshot.data.question;
+  Widget _buildList(AsyncSnapshot<DataListState> snapshot) {
+    final data = snapshot.data.listData;
     final isLoading = snapshot.data.isLoading;
     final error = snapshot.data.error;
 

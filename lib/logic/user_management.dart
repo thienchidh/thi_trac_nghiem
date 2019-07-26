@@ -1,5 +1,5 @@
 import 'package:thi_trac_nghiem/api/login_api.dart';
-import 'package:thi_trac_nghiem/model/account.dart';
+import 'package:thi_trac_nghiem/model/api_model/account.dart';
 
 class UserManagement {
   static final UserManagement _singleton = UserManagement._();

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:thi_trac_nghiem/model/list_questions.dart';
+import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 import 'package:thi_trac_nghiem/screens/check_answers_screen.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
