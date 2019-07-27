@@ -1,8 +1,8 @@
-class ListMyClass {
+class ListClass {
   String size;
   List<String> listData;
 
-  ListMyClass.fromJson(Map<String, dynamic> json) {
+  ListClass.fromJson(Map<String, dynamic> json) {
     size = json['size'];
     listData = json['ListData'].cast<String>();
   }

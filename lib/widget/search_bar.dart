@@ -1,4 +1,3 @@
-import 'package:english_words/english_words.dart' as words;
 import 'package:flutter/material.dart';
 import 'package:speech_recognition/speech_recognition.dart';
 
@@ -23,7 +22,9 @@ class _SearchBarState extends State<SearchBar> {
   _SearchAppBarDelegate _searchDelegate;
 
   _SearchBarState()
-      : listSuggestions = List.from(words.all),
+  //TODO
+//      : listSuggestions = List.from(words.all),
+      : listSuggestions = [],
         super();
 
   SpeechRecognition _speechRecognition;
@@ -142,9 +143,9 @@ class _SearchAppBarDelegate extends SearchDelegate<String> {
   List<String> _words;
   List<String> _history;
 
-  final onVoice;
+  final onVoiceCallback;
 
-  _SearchAppBarDelegate(this._words, this.onVoice) {
+  _SearchAppBarDelegate(this._words, this.onVoiceCallback) {
     _history = _words;
   }
 
@@ -229,7 +230,7 @@ class _SearchAppBarDelegate extends SearchDelegate<String> {
               tooltip: 'Voice input',
               onPressed: () {
                 _hideSearch(context, null);
-                onVoice();
+                onVoiceCallback();
               },
             ),
     ];

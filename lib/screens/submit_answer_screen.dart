@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 import 'package:thi_trac_nghiem/model/enums.dart';
-import 'package:thi_trac_nghiem/screens/finished_screen.dart';
+import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class SubmitScreen extends StatefulWidget {
   final List<Question> _data;
@@ -37,16 +37,14 @@ class _SubmitScreenState extends State<SubmitScreen> {
 
             switch (typeExam) {
               case TypeExam.testTest:
-                Navigator.pushNamed(context, FinishedScreen.nameRouter,
+                Navigator.pushNamed(context, '${UIData.FINISHED_ROUTE_NAME}',
                     arguments: questions);
-
-                break;
+                return;
 
               case TypeExam.officialInspection:
               // server mark
-
+              // TODO
               default:
-                break;
             }
 
             // TODO

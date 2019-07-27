@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thi_trac_nghiem/bloc/menu_bloc.dart';
-import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/menu.dart';
 import 'package:thi_trac_nghiem/utils/dialog_ultis.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
@@ -25,15 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _bodySliverList(BuildContext context) {
-    final user = UserManagement().curUser;
     return WillPopScope(
       onWillPop: () {
-        return DialogUltis().showAlertDialog(
-          context,
-          title: 'Đăng xuất',
-          content:
-          'Tài khoản \"${user.name}\" sẽ được đăng xuất khỏi thiết bị này?',
-        );
+        return DialogUltis().showDialogLogout(context);
       },
       child: StreamBuilder<List<Menu>>(
         stream: MenuBloc().menuItems,

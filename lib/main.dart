@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:thi_trac_nghiem/screens/exam_screen.dart';
+import 'package:thi_trac_nghiem/screens/favorite_screen.dart';
 import 'package:thi_trac_nghiem/screens/finished_screen.dart';
 import 'package:thi_trac_nghiem/screens/home_screen.dart';
 import 'package:thi_trac_nghiem/screens/login_screen.dart';
@@ -40,9 +41,13 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     _checkPermissions();
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       showPerformanceOverlay: false,
@@ -69,12 +74,12 @@ class _MyAppState extends State<MyApp> {
         '/${UIData.PRACTICE_ROUTE_NAME}': (_) => SearchScreen(),
         '/${UIData.ADVANCE_ROUTE_NAME}': (_) => TimerScreen(),
         '/${UIData.SETTINGS_EXAM_ROUTE_NAME}': (_) => SettingExamScreen(),
-//        '/${UIData.FAVORITE_ROUTE_NAME}': (_) => SearchScreen(),
+        '/${UIData.FAVORITE_ROUTE_NAME}': (_) => FavoriteScreen(),
 //        '/${UIData.NOT_FOUND_ROUTE_NAME}': (_) => HomeScreen(),
 //        '/${UIData.HISTORY_ROUTE_NAME}': (_) => HomeScreen(),
 //        '/${UIData.SUPPORT_ROUTE_NAME}': (_) => HomeScreen(),
 //        '/${UIData.ABOUT_US_ROUTE_NAME}': (_) => TimerScreen(),
-        FinishedScreen.nameRouter: (_) => FinishedScreen(),
+        '${UIData.FINISHED_ROUTE_NAME}': (_) => FinishedScreen(),
       },
       onUnknownRoute: (RouteSettings rs) {
         return MaterialPageRoute(

@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:collection/collection.dart' show ListEquality;
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:thi_trac_nghiem/api/i_data_source.dart';
+import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
 
 class DataListState<T> {
   final UnmodifiableListView<T> listData;
@@ -69,18 +69,16 @@ class DataBloc<T> {
 
   final _loadMoreController = PublishSubject<void>();
 
-  ValueConnectableObservable<DataListState<T>> _questionList$;
+  ValueConnectableObservable<DataListState<T>> _dataList$;
   StreamSubscription<DataListState<T>> _streamSubscription;
-
-  String keyWord;
 
   Sink<void> get loadMore => _loadMoreController.sink;
 
   Sink<void> get loadFirstPage => _loadFirstPageController.sink;
 
-  Stream<DataListState<T>> get questionList => _questionList$;
+  Stream<DataListState<T>> get dataList => _dataList$;
 
-  Stream<void> get loadedAllQuestion => _loadAllController.stream;
+  Stream<void> get loadedAllData => _loadAllController.stream;
 
   Stream<Object> get error => _errorNotNull$;
 
@@ -115,12 +113,12 @@ class DataBloc<T> {
     ]).map((state) => Observable.just(state));
     // merger to one stream, and map each state to Observable
 
-    _questionList$ = Observable.switchLatest(streams)
+    _dataList$ = Observable.switchLatest(streams)
         .distinct()
 //        .doOnData((state) => print('state = $state'))
         .publishValueSeeded(DataListState.initial());
 
-    _streamSubscription = _questionList$.connect();
+    _streamSubscription = _dataList$.connect();
   }
 
   Future<void> refresh() async {
@@ -139,7 +137,7 @@ class DataBloc<T> {
     }
 
     // get latest state
-    final latestState = _questionList$.value;
+    final latestState = _dataList$.value;
 //    print(
 //      '_loadMoreData loadFirstPage = $loadFirstPage, latestState = $latestState',
 //    );
@@ -155,7 +153,6 @@ class DataBloc<T> {
     try {
       // fetch page from data source
       final questions = await _dataSource.getData(
-        keyWord: keyWord,
         isFirstLoading: _isLoadingFirstPage$.value,
       );
 

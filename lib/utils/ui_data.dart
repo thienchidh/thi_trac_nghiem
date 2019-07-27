@@ -15,6 +15,7 @@ class UIData {
   static const String ADVANCE = 'Nâng cao';
   static const String FAVORITE_QUESTION = 'Câu hỏi yêu thích';
   static const String EXAM = 'Kỳ thi';
+  static const String FINISHED = 'Hoàn thành thi';
 
   //routes name
   static const String LOGIN_ROUTE_NAME = '$LOGIN';
@@ -28,6 +29,7 @@ class UIData {
   static const String ADVANCE_ROUTE_NAME = '$ADVANCE';
   static const String FAVORITE_ROUTE_NAME = '$FAVORITE_QUESTION';
   static const String EXAM_ROUTE_NAME = '$EXAM';
+  static const String FINISHED_ROUTE_NAME = '$FINISHED';
 
   //about app
   static const String APP_NAME = 'Thi trắc nghiệm';

@@ -76,13 +76,7 @@ class CommonDrawer extends StatelessWidget {
               color: Colors.redAccent,
             ),
             onTap: () {
-              return DialogUltis().showAlertDialog(
-                context,
-                title: 'Đăng xuất',
-                content:
-                'Tài khoản \"${user
-                    .name}\" sẽ được đăng xuất khỏi thiết bị này?',
-              );
+              return DialogUltis().showDialogLogout(context);
             },
           ),
           Divider(),
