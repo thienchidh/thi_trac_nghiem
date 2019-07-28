@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -15,6 +14,7 @@ class UIData {
   static const String ADVANCE = 'Nâng cao';
   static const String FAVORITE_QUESTION = 'Câu hỏi yêu thích';
   static const String EXAM = 'Kỳ thi';
+  static const String LIST_EXAM = 'Kỳ thi hiện tại';
   static const String FINISHED = 'Hoàn thành thi';
 
   //routes name
@@ -29,6 +29,7 @@ class UIData {
   static const String ADVANCE_ROUTE_NAME = '$ADVANCE';
   static const String FAVORITE_ROUTE_NAME = '$FAVORITE_QUESTION';
   static const String EXAM_ROUTE_NAME = '$EXAM';
+  static const String LIST_EXAM_ROUTE_NAME = '$LIST_EXAM';
   static const String FINISHED_ROUTE_NAME = '$FINISHED';
 
   //about app
@@ -60,31 +61,4 @@ class UIData {
   static const Color primarySwatch = Colors.lime;
   static const Color accentColor = Colors.cyan;
   static const List<Color> kitGradients = [primaryColor, accentColor];
-
-  //login
-  static const String enter_code_label = 'Phone Number';
-  static const String enter_code_hint = '10 Digit Phone Number';
-  static const String enter_otp_label = 'OTP';
-  static const String enter_otp_hint = '4 Digit OTP';
-  static const String get_otp = 'Get OTP';
-  static const String resend_otp = 'Resend OTP';
-  static const String login = 'Login';
-  static const String enter_valid_number = 'Enter 10 digit phone number';
-  static const String enter_valid_otp = 'Enter 4 digit otp';
-
-  //gneric
-  static const String error = 'Error';
-  static const String success = 'Success';
-  static const String ok = 'OK';
-  static const String forgot_password = 'Forgot Password?';
-  static const String something_went_wrong = 'Something went wrong';
-  static const String coming_soon = 'Coming Soon';
-
-  //random color
-  static final Random _random = Random();
-
-  /// Returns a random color.
-  static Color next() {
-    return Color(0xFF000000 + _random.nextInt(0x00FFFFFF));
-  }
 }

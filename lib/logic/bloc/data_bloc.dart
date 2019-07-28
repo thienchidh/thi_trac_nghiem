@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:collection' show UnmodifiableListView;
-import 'dart:math';
 
 import 'package:collection/collection.dart' show ListEquality;
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
+import 'package:thi_trac_nghiem/utils/delay_ultis.dart';
 
 class DataListState<T> {
   final UnmodifiableListView<T> listData;
@@ -148,15 +148,16 @@ class DataBloc<T> {
     yield latestState.copyWith(
         isLoading: true, listData: loadFirstPage ? [] : null);
 
-    final int oldTime = DateTime.now().millisecondsSinceEpoch;
+    DelayUltis ultis = DelayUltis(milliseconds: loadFirstPage ? 1500 : 50);
+    ultis.start();
 
     try {
       // fetch page from data source
-      final questions = await _dataSource.getData(
+      final data = await _dataSource.getData(
         isFirstLoading: _isLoadingFirstPage$.value,
       );
 
-      if (questions.isEmpty) {
+      if (data.isEmpty) {
         // if page is empty, emit all paged loaded
         _loadAllController.add(null);
       }
@@ -169,22 +170,9 @@ class DataBloc<T> {
         // if not load first page, append current list
         listData.addAll(currentList);
       }
-      listData.addAll(questions);
+      listData.addAll(data);
 
-      final int newTime = DateTime.now().millisecondsSinceEpoch;
-      final int totalSleepRecommend = 1500;
-      final int normalSleep = 50;
-
-      await Future.delayed(
-        Duration(
-          milliseconds: max(
-              0,
-              newTime -
-                  oldTime +
-                  normalSleep +
-                  (loadFirstPage ? totalSleepRecommend - normalSleep : 0)),
-        ),
-      );
+      await ultis.finish();
 
       // emit list state
       yield latestState.copyWith(

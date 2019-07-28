@@ -11,7 +11,7 @@ class MenuViewModel {
       Menu(
         title: UIData.PRACTICE,
         menuColor: Color(0xffe19b6b),
-        icon: Icons.train,
+        icon: Icons.directions_run,
         image: UIData.blankImage,
         item: UIData.PRACTICE_ROUTE_NAME,
       ),
@@ -20,7 +20,7 @@ class MenuViewModel {
         menuColor: Color(0xffc7d8f4),
         icon: Icons.send,
         image: UIData.loginImage,
-        item: UIData.EXAM_ROUTE_NAME,
+        item: UIData.LIST_EXAM_ROUTE_NAME,
       ),
       Menu(
         title: UIData.FAVORITE_QUESTION,
@@ -48,7 +48,7 @@ class MenuViewModel {
         menuColor: Color(0xff050505),
         icon: Icons.person,
         image: UIData.profileImage,
-        item: '',
+        item: UIData.ADVANCE_ROUTE_NAME,
       ),
       Menu(
         title: UIData.ABOUT_US,
@@ -63,7 +63,7 @@ class MenuViewModel {
         menuColor: Color(0xffddcec2),
         icon: Icons.payment,
         image: UIData.paymentImage,
-        item: '',
+        item: UIData.SUPPORT_ROUTE_NAME,
       ),
     ];
   }

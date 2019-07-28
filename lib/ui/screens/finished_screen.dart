@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
-import 'package:thi_trac_nghiem/screens/check_answers_screen.dart';
+import 'package:thi_trac_nghiem/ui/screens/check_answers_screen.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class FinishedScreen extends StatelessWidget {
-  static const nameRouter = '/FinishedScreen';
-
   FinishedScreen({Key key}) : super(key: key);
 
   @override
@@ -15,12 +13,10 @@ class FinishedScreen extends StatelessWidget {
         .settings
         .arguments;
 
-    int correct = 0;
-    questions.forEach((q) {
-      if (q.dapAnDung == q.answerOfUser) {
-        ++correct;
-      }
-    });
+    int numCorrectAnswer =
+        questions
+            .where((q) => q.dapAnDung == q.answerOfUser)
+            .length;
 
     final TextStyle titleStyle = TextStyle(
         color: Colors.black87, fontSize: 16.0, fontWeight: FontWeight.w500);
@@ -62,7 +58,7 @@ class FinishedScreen extends StatelessWidget {
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16.0),
                   title: Text('Điểm', style: titleStyle),
-                  trailing: Text('${correct / questions.length * 100}%',
+                  trailing: Text('${numCorrectAnswer / questions.length * 10}',
                       style: trailingStyle),
                 ),
               ),
@@ -73,7 +69,7 @@ class FinishedScreen extends StatelessWidget {
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16.0),
                   title: Text('Trả lời đúng', style: titleStyle),
-                  trailing: Text('$correct/${questions.length}',
+                  trailing: Text('$numCorrectAnswer/${questions.length}',
                       style: trailingStyle),
                 ),
               ),
@@ -85,7 +81,8 @@ class FinishedScreen extends StatelessWidget {
                   contentPadding: const EdgeInsets.all(16.0),
                   title: Text('Trả lời sai', style: titleStyle),
                   trailing: Text(
-                      '${questions.length - correct}/${questions.length}',
+                      '${questions.length - numCorrectAnswer}/${questions
+                          .length}',
                       style: trailingStyle),
                 ),
               ),

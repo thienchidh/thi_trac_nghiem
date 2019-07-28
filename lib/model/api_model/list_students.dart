@@ -59,20 +59,25 @@ class Student {
 }
 
 class Exam {
+  static const String UPCOMING = 'upcoming';
+  static const String RUNNING = 'running';
+  static const String FINISHED = 'finished';
+
   String maLoaiKt;
   String thoiGianBatDau;
   String baoLau;
   String thoiGianKetThuc;
   String lop;
   String status;
+  String tenBaiThi;
 
-  Exam(
-      {this.maLoaiKt,
-      this.thoiGianBatDau,
-      this.baoLau,
-      this.thoiGianKetThuc,
-      this.lop,
-      this.status});
+  Exam({this.maLoaiKt,
+    this.thoiGianBatDau,
+    this.baoLau,
+    this.thoiGianKetThuc,
+    this.lop,
+    this.status,
+    this.tenBaiThi});
 
   Exam.fromJson(Map<String, dynamic> json) {
     maLoaiKt = json['ma_loai_kt'];
@@ -81,16 +86,29 @@ class Exam {
     thoiGianKetThuc = json['thoi_gian_ket_thuc'];
     lop = json['lop'];
     status = json['status'];
+    tenBaiThi = json['ten_bai_thi'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['ma_loai_kt'] = this.maLoaiKt;
     data['thoi_gian_bat_dau'] = this.thoiGianBatDau;
     data['bao_lau'] = this.baoLau;
     data['thoi_gian_ket_thuc'] = this.thoiGianKetThuc;
     data['lop'] = this.lop;
     data['status'] = this.status;
+    data['ten_bai_thi'] = this.tenBaiThi;
     return data;
+  }
+
+  Map<String, String> toMap() {
+    final defaultValue = 'null';
+    return {
+      'bai_thi': maLoaiKt != null ? maLoaiKt : defaultValue,
+      'thoi_gian_bat_dau':
+      thoiGianBatDau != null ? thoiGianBatDau : defaultValue,
+      'bao_lau': baoLau != null ? baoLau : defaultValue,
+      'lop': lop != null ? lop : defaultValue
+    };
   }
 }

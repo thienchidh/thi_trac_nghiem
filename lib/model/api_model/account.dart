@@ -9,6 +9,13 @@ class Account {
     this.isStudent = true,
   });
 
+  Map<String, String> toMap() {
+    return {
+      'userName': username,
+      'pass': password,
+    };
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -33,14 +40,14 @@ class User {
   String role;
   String maso;
   String name;
-
-  User({this.status, this.role, this.maso, this.name});
+  String lop;
 
   User.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     role = json['role'];
     maso = json['maso'];
     name = json['name'];
+    lop = json['lop'];
   }
 
   Map<String, dynamic> toJson() {
@@ -49,6 +56,7 @@ class User {
     data['role'] = this.role;
     data['maso'] = this.maso;
     data['name'] = this.name;
+    data['lop'] = this.lop;
     return data;
   }
 
@@ -60,9 +68,14 @@ class User {
           status == other.status &&
           role == other.role &&
           maso == other.maso &&
-          name == other.name;
+          name == other.name &&
+          lop == other.lop;
 
   @override
   int get hashCode =>
-      status.hashCode ^ role.hashCode ^ maso.hashCode ^ name.hashCode;
+      status.hashCode ^
+      role.hashCode ^
+      maso.hashCode ^
+      name.hashCode ^
+      lop.hashCode;
 }

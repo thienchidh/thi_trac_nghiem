@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
+import 'package:thi_trac_nghiem/api/config/config_api.dart';
 import 'package:thi_trac_nghiem/model/api_model/account.dart';
 
 class LoginApi {
@@ -11,33 +12,21 @@ class LoginApi {
 
   factory LoginApi() => _singleton;
 
-  final String _baseUrl = "http://103.81.86.156:8080";
   final Client _client = Client();
 
-  Future<User> verifyLogin(Account a) async {
+  Future<User> verifyLogin(Account account) async {
     try {
-      final url = "$_baseUrl/apiThitracnghiem/api01/General/getAuthen";
-
-      final queryParameters = {
-        "userName": a.username,
-        "pass": a.password,
-      };
+      final url = '$baseUrl/apiThitracnghiem/api01/General/getAuthen';
 
       final response = await _client
-          .post(
-        url,
-        body: queryParameters,
-      )
-          .timeout(
-        const Duration(
-          milliseconds: 10000,
-        ),
-      );
+          .post(url, body: account.toMap())
+          .timeout(connectTimedOut);
+
       final results = json.decode(response.body);
 
       User user = User.fromJson(results);
-      if (user.status != "success" ||
-          (!a.isStudent ^ (user.role == "giangvien"))) {
+      if (user.status != STATUS_SUCCESS ||
+          (!account.isStudent ^ (user.role == 'giangvien'))) {
         return null;
       }
 

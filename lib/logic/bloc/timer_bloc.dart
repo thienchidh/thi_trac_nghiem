@@ -2,21 +2,31 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:thi_trac_nghiem/bloc/timer_event.dart';
-import 'package:thi_trac_nghiem/bloc/timer_state.dart';
+import 'package:thi_trac_nghiem/logic/bloc/timer_event.dart';
+import 'package:thi_trac_nghiem/logic/bloc/timer_state.dart';
 import 'package:thi_trac_nghiem/logic/ticker.dart';
 
 class TimerBloc extends Bloc<TimerEvent, TimerState> {
   final Ticker _ticker;
   final int _duration;
+  final Function _voidCallBack;
 
   StreamSubscription<int> _tickerSubscription;
 
-  TimerBloc({@required duration, @required Ticker ticker})
+  TimerBloc({isAutoStart = true,
+    @required duration,
+    @required Ticker ticker,
+    @required Function voidCallbackOnFinished})
       : assert(duration != null),
         assert(ticker != null),
+        assert(voidCallbackOnFinished != null),
         _ticker = ticker,
-        _duration = duration;
+        _duration = duration,
+        _voidCallBack = voidCallbackOnFinished {
+    if (isAutoStart) {
+      dispatch(StartTimer(duration: _duration));
+    }
+  }
 
   @override
   TimerState get initialState => TimerReady(_duration);
@@ -31,13 +41,13 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   Stream<TimerState> mapEventToState(
     TimerEvent event,
   ) async* {
-    if (event is Start) {
+    if (event is StartTimer) {
       yield* _mapStartToState(event);
-    } else if (event is Pause) {
+    } else if (event is PauseTimer) {
       yield* _mapPauseToState(event);
-    } else if (event is Resume) {
+    } else if (event is ResumeTimer) {
       yield* _mapResumeToState(event);
-    } else if (event is Reset) {
+    } else if (event is ResetTimer) {
       yield* _mapResetToState(event);
     } else if (event is Tick) {
       yield* _mapTickToState(event);
@@ -50,7 +60,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     super.dispose();
   }
 
-  Stream<TimerState> _mapStartToState(Start start) async* {
+  Stream<TimerState> _mapStartToState(StartTimer start) async* {
     yield TimerRunning(start.duration);
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker.tick(ticks: start.duration).listen(
@@ -60,7 +70,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     );
   }
 
-  Stream<TimerState> _mapPauseToState(Pause pause) async* {
+  Stream<TimerState> _mapPauseToState(PauseTimer pause) async* {
     final state = currentState;
     if (state is TimerRunning) {
       _tickerSubscription?.pause();
@@ -68,7 +78,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     }
   }
 
-  Stream<TimerState> _mapResumeToState(Resume pause) async* {
+  Stream<TimerState> _mapResumeToState(ResumeTimer pause) async* {
     final state = currentState;
     if (state is TimerPaused) {
       _tickerSubscription?.resume();
@@ -76,12 +86,17 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     }
   }
 
-  Stream<TimerState> _mapResetToState(Reset reset) async* {
+  Stream<TimerState> _mapResetToState(ResetTimer reset) async* {
     _tickerSubscription?.cancel();
     yield TimerReady(_duration);
   }
 
   Stream<TimerState> _mapTickToState(Tick tick) async* {
-    yield tick.duration > 0 ? TimerRunning(tick.duration) : TimerFinished();
+    if (tick.duration > 0) {
+      yield TimerRunning(tick.duration);
+    } else {
+      yield TimerFinished();
+      _voidCallBack();
+    }
   }
 }

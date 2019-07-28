@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:thi_trac_nghiem/bloc/menu_bloc.dart';
+import 'package:thi_trac_nghiem/logic/bloc/menu_bloc.dart';
 import 'package:thi_trac_nghiem/model/menu.dart';
+import 'package:thi_trac_nghiem/ui/widget/common_drawer.dart';
 import 'package:thi_trac_nghiem/utils/dialog_ultis.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
-import 'package:thi_trac_nghiem/widget/common_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, snapshot) {
           return snapshot.hasData
               ? CustomScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+            //physics: AlwaysScrollableScrollPhysics(),
             slivers: <Widget>[
               _appBar(),
               _bodyGrid(context, snapshot.data),
@@ -87,11 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget itemMenuStack(BuildContext context, Menu menu) {
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/${menu.item}',
-          arguments: 120, // TODO this is example, need to update
-        );
+        Navigator.pushNamed(context, '/${menu.item}');
       },
       splashColor: Colors.orange,
       child: Card(

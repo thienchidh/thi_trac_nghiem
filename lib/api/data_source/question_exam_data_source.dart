@@ -2,7 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
-import 'package:thi_trac_nghiem/api/config_api.dart';
+import 'package:thi_trac_nghiem/api/config/config_api.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
 import 'package:thi_trac_nghiem/model/api_model/exam_questions.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
@@ -56,19 +56,7 @@ class QuestionExamDataSource extends DataSource<Question> {
       String key = makeKeyCacheList([_studentCode, _examCode]);
       _cacheList[key] = questions;
 
-      final list = questions.listCauHoiDetails;
-
-      for (int i = 0; i < list.length; i++) {
-        final id = list[i].id;
-
-        if (haveCache(id)) {
-          list[i] = getFromCache(id);
-        } else {
-          putToCache(id, list[i]);
-        }
-      }
-
-      return list;
+      return questions.listCauHoiDetails;
     } catch (e) {
       print(e);
       throw StateError('$e');

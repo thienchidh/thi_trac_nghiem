@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:thi_trac_nghiem/api/config_api.dart';
+import 'package:thi_trac_nghiem/api/config/config_api.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_my_class.dart';
 
@@ -21,8 +21,7 @@ class ClassDataSource extends DataSource<String> {
   @deprecated
   @override
   void setParameter({List<String> parameter}) {
-    // not using this method!
-    throw Error();
+    // nothing here
   }
 
   String _getPath() {

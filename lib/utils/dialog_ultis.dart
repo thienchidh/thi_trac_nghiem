@@ -6,8 +6,8 @@ import 'package:thi_trac_nghiem/utils/ui_data.dart';
 class DialogUltis {
   Future<bool> showAlertDialog(
     BuildContext context, {
-    String title = 'Xác nhận hành động',
-    String content = 'Bạn chắc chứ?',
+        String title = 'Xác nhận thoát?',
+        String content = 'Bạn có muốn thoát?',
   }) async {
     return showDialog<bool>(
       context: context,

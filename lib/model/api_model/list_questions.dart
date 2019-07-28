@@ -64,6 +64,8 @@ class Question {
     return -1;
   }
 
+  int getIndexOfAnswer() => listDapAn.indexOf(answerOfUser);
+
   Question.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     content = json['content'];

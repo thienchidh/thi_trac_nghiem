@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thi_trac_nghiem/bloc/timer_bloc.dart';
-import 'package:thi_trac_nghiem/bloc/timer_event.dart';
-import 'package:thi_trac_nghiem/bloc/timer_state.dart';
+import 'package:thi_trac_nghiem/logic/bloc/timer_bloc.dart';
+import 'package:thi_trac_nghiem/logic/bloc/timer_event.dart';
+import 'package:thi_trac_nghiem/logic/bloc/timer_state.dart';
 
 abstract class ActionsTimer extends StatelessWidget {
   @override
@@ -40,11 +40,7 @@ abstract class ActionsTimer extends StatelessWidget {
 
   List<Widget> onTimerPaused(TimerBloc timerBloc, TimerPaused state);
 
-  List<Widget> onTimerFinished(
-    TimerBloc timerBloc,
-    TimerFinished state, {
-    arguments,
-  });
+  List<Widget> onTimerFinished(TimerBloc timerBloc, TimerFinished state);
 
   ActionsTimer newInstance();
 }
@@ -52,8 +48,6 @@ abstract class ActionsTimer extends StatelessWidget {
 class ActionsTimerUpcomingExam extends ActionsTimer {
   @override
   List<Widget> onTimerReady(TimerBloc timerBloc, TimerReady state) {
-    print('ActionsTimerBeforeStart.onReady');
-    timerBloc.dispatch(Start(duration: state.duration));
     return [];
   }
 
@@ -64,13 +58,7 @@ class ActionsTimerUpcomingExam extends ActionsTimer {
   List<Widget> onTimerPaused(TimerBloc timerBloc, TimerPaused state) => [];
 
   @override
-  List<Widget> onTimerFinished(
-    TimerBloc timerBloc,
-    TimerFinished state, {
-    arguments,
-  }) {
-    // TODO get all questions from server to client
-    print('ActionsTimerBeforeStart.onTimerFinished');
+  List<Widget> onTimerFinished(TimerBloc timerBloc, TimerFinished state) {
     return [];
   }
 
@@ -81,8 +69,6 @@ class ActionsTimerUpcomingExam extends ActionsTimer {
 class ActionsTimerRunningExam extends ActionsTimer {
   @override
   List<Widget> onTimerReady(TimerBloc timerBloc, TimerReady state) {
-    print('ActionsTimerAfterStart.onTimerReady');
-    timerBloc.dispatch(Start(duration: state.duration));
     return [];
   }
 
@@ -93,13 +79,7 @@ class ActionsTimerRunningExam extends ActionsTimer {
   List<Widget> onTimerPaused(TimerBloc timerBloc, TimerPaused state) => [];
 
   @override
-  List<Widget> onTimerFinished(
-    TimerBloc timerBloc,
-    TimerFinished state, {
-    arguments,
-  }) {
-    // TODO push answers from client to server
-    print('ActionsTimerAfterStart.onTimerFinished');
+  List<Widget> onTimerFinished(TimerBloc timerBloc, TimerFinished state) {
     return [];
   }
 
@@ -113,7 +93,8 @@ class ActionsTimerNormal extends ActionsTimer {
     return [
       FloatingActionButton(
         child: Icon(Icons.play_arrow),
-        onPressed: () => timerBloc.dispatch(Start(duration: state.duration)),
+        onPressed: () =>
+            timerBloc.dispatch(StartTimer(duration: state.duration)),
       ),
     ];
   }
@@ -123,11 +104,11 @@ class ActionsTimerNormal extends ActionsTimer {
     return [
       FloatingActionButton(
         child: Icon(Icons.pause),
-        onPressed: () => timerBloc.dispatch(Pause()),
+        onPressed: () => timerBloc.dispatch(PauseTimer()),
       ),
       FloatingActionButton(
         child: Icon(Icons.replay),
-        onPressed: () => timerBloc.dispatch(Reset()),
+        onPressed: () => timerBloc.dispatch(ResetTimer()),
       ),
     ];
   }
@@ -137,25 +118,21 @@ class ActionsTimerNormal extends ActionsTimer {
     return [
       FloatingActionButton(
         child: Icon(Icons.play_arrow),
-        onPressed: () => timerBloc.dispatch(Resume()),
+        onPressed: () => timerBloc.dispatch(ResumeTimer()),
       ),
       FloatingActionButton(
         child: Icon(Icons.replay),
-        onPressed: () => timerBloc.dispatch(Reset()),
+        onPressed: () => timerBloc.dispatch(ResetTimer()),
       ),
     ];
   }
 
   @override
-  List<Widget> onTimerFinished(
-    TimerBloc timerBloc,
-    TimerFinished state, {
-    arguments,
-  }) {
+  List<Widget> onTimerFinished(TimerBloc timerBloc, TimerFinished state) {
     return [
       FloatingActionButton(
         child: Icon(Icons.replay),
-        onPressed: () => timerBloc.dispatch(Reset()),
+        onPressed: () => timerBloc.dispatch(ResetTimer()),
       ),
     ];
   }

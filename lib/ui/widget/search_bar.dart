@@ -237,7 +237,7 @@ class _SearchAppBarDelegate extends SearchDelegate<String> {
   }
 }
 
-// Suggestions list widget displayed in the search page.
+// Suggestions list ui.widget displayed in the search page.
 class _SuggestionList extends StatelessWidget {
   const _SuggestionList({this.suggestions, this.query, this.onSelected});
 

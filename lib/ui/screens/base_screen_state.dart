@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
-import 'package:thi_trac_nghiem/bloc/data_bloc.dart';
-import 'package:thi_trac_nghiem/widget/common_drawer.dart';
+import 'package:thi_trac_nghiem/logic/bloc/data_bloc.dart';
+import 'package:thi_trac_nghiem/ui/widget/common_drawer.dart';
+import 'package:thi_trac_nghiem/ui/widget/error_item.dart';
+import 'package:thi_trac_nghiem/ui/widget/load_more_item.dart';
 
 abstract class BaseScreenState<T> extends State<StatefulWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -14,7 +16,7 @@ abstract class BaseScreenState<T> extends State<StatefulWidget> {
   StreamSubscription<void> subscriptionReachMaxItems;
   StreamSubscription<Object> subscriptionError;
 
-  bool _isReachMaxItem = false;
+  bool isReachMaxItem = false;
 
   DataSource<T> initDataSource();
 
@@ -30,15 +32,15 @@ abstract class BaseScreenState<T> extends State<StatefulWidget> {
   }
 
   void loadMore() {
-    if (_isReachMaxItem) {
+    if (isReachMaxItem) {
       return;
     }
-    print('bloc.loadMore.add(null)');
+    print('logic.bloc.loadMore.add(null)');
     bloc.loadMore.add(null);
   }
 
   Future<void> refresh() async {
-    _isReachMaxItem = false;
+    isReachMaxItem = false;
 
     _dataSource.setParameter(
       parameter: buildDataSourceParameter(),
@@ -58,7 +60,7 @@ abstract class BaseScreenState<T> extends State<StatefulWidget> {
 
   Future<void> onReachMaxItem(void _) async {
     // show animation when loaded all data
-    _isReachMaxItem = true;
+    isReachMaxItem = true;
     await scaffoldKey.currentState
         ?.showSnackBar(
           SnackBar(
@@ -79,11 +81,17 @@ abstract class BaseScreenState<T> extends State<StatefulWidget> {
   }
 }
 
-////
+abstract class PageTypeScreenState<T> extends BaseScreenState<T> {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return null;
+  }
+}
 
 abstract class ListTypeScreenState<T> extends BaseScreenState<T> {
   final scrollController = ScrollController();
-  bool isShowFloatingButton = false;
+  bool isHideFloatingButton = true;
 
   static const _offsetVisibleThreshold = 100;
 
@@ -109,12 +117,12 @@ abstract class ListTypeScreenState<T> extends BaseScreenState<T> {
     }
 
     if (position.userScrollDirection == ScrollDirection.reverse) {
-      if (isShowFloatingButton) {
-        setState(() => isShowFloatingButton = false);
+      if (isHideFloatingButton) {
+        setState(() => isHideFloatingButton = false);
       }
     } else if (position.userScrollDirection == ScrollDirection.forward) {
-      if (!isShowFloatingButton) {
-        setState(() => isShowFloatingButton = true);
+      if (!isHideFloatingButton) {
+        setState(() => isHideFloatingButton = true);
       }
     }
   }
@@ -124,7 +132,7 @@ abstract class ListTypeScreenState<T> extends BaseScreenState<T> {
     return Scaffold(
       key: scaffoldKey,
       floatingActionButton: Visibility(
-        visible: !isShowFloatingButton,
+        visible: !isHideFloatingButton,
         child: FloatingActionButton(
           tooltip: 'Scroll to top',
           mini: true,
@@ -142,27 +150,24 @@ abstract class ListTypeScreenState<T> extends BaseScreenState<T> {
       ),
       drawer: CommonDrawer(),
       body: RefreshIndicator(
-        child: Container(
-          constraints: BoxConstraints.expand(),
-          child: StreamBuilder<DataListState<T>>(
-            stream: bloc.dataList,
-            builder: (BuildContext context,
-                AsyncSnapshot<DataListState<T>> snapshot) {
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error ${snapshot.error}'),
-                );
-              }
+        child: StreamBuilder<DataListState<T>>(
+          stream: bloc.dataList,
+          builder:
+              (BuildContext context, AsyncSnapshot<DataListState<T>> snapshot) {
+            if (snapshot.hasError) {
+              return ErrorItem(
+                onClick: () => refresh(),
+              );
+            }
 
-              if (!snapshot.hasData) {
-                return const Center(
-                  child: const CircularProgressIndicator(),
-                );
-              }
+            if (!snapshot.hasData) {
+              return LoadMoreItem(
+                isVisible: true,
+              );
+            }
 
-              return buildList(snapshot);
-            },
-          ),
+            return buildList(snapshot);
+          },
         ),
         onRefresh: () => refresh(),
       ),
@@ -170,12 +175,4 @@ abstract class ListTypeScreenState<T> extends BaseScreenState<T> {
   }
 
   Widget buildList(AsyncSnapshot<DataListState<T>> snapshot);
-}
-
-abstract class PageTypeScreenState<T> extends BaseScreenState<T> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return null;
-  }
 }

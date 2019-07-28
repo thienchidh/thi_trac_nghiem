@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:thi_trac_nghiem/api/data_source/favorite_data_source.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
-import 'package:thi_trac_nghiem/bloc/data_bloc.dart';
+import 'package:thi_trac_nghiem/logic/bloc/data_bloc.dart';
 import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
-import 'package:thi_trac_nghiem/widget/question_item.dart';
+import 'package:thi_trac_nghiem/ui/widget/error_item.dart';
+import 'package:thi_trac_nghiem/ui/widget/load_more_item.dart';
+import 'package:thi_trac_nghiem/ui/widget/question_item.dart';
 import 'package:toast/toast.dart';
 
-import 'base_state_screen.dart';
+import 'base_screen_state.dart';
 
 class FavoriteScreen extends StatefulWidget {
   @override
@@ -28,14 +29,14 @@ class _FavoriteScreenState extends ListTypeScreenState<Question> {
     refresh();
   }
 
-  Widget buildList(AsyncSnapshot<DataListState> snapshot) {
+  Widget buildList(AsyncSnapshot<DataListState<Question>> snapshot) {
     final data = snapshot.data.listData;
     final isLoading = snapshot.data.isLoading;
     final error = snapshot.data.error;
 
     return CustomScrollView(
       controller: scrollController,
-      physics: AlwaysScrollableScrollPhysics(),
+      //physics: AlwaysScrollableScrollPhysics(),
       slivers: <Widget>[
         SliverAppBar(
           // TODO
@@ -58,40 +59,12 @@ class _FavoriteScreenState extends ListTypeScreenState<Question> {
               }
 
               if (error != null) {
-                return ListTile(
-                  title: Text(
-                    'Có lỗi xảy ra, click vào đây để thử lại!',
-                    style: Theme.of(context)
-                        .textTheme
-                        .body1
-                        .copyWith(fontSize: 16.0),
-                  ),
-                  isThreeLine: false,
-                  leading: CircleAvatar(
-                    child: Text(':('),
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.redAccent,
-                  ),
-                  onTap: () {
-                    loadMore();
-                  },
+                return ErrorItem(
+                  onClick: () => loadMore(),
                 );
               }
-
-              return Visibility(
-                visible: isLoading,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Center(
-                    child: const SizedBox(
-                      width: 24.0,
-                      height: 24.0,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.0,
-                      ),
-                    ),
-                  ),
-                ),
+              return LoadMoreItem(
+                isVisible: isLoading,
               );
             },
             childCount: data.length + 1,

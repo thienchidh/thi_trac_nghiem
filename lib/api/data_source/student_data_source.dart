@@ -2,7 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
-import 'package:thi_trac_nghiem/api/config_api.dart';
+import 'package:thi_trac_nghiem/api/config/config_api.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_students.dart';
 
@@ -58,7 +58,7 @@ class StudentDataSource extends DataSource<Student> {
       for (int i = 0; i < list.length; i++) {
         final id = list[i].maso;
 
-        if (haveCache(id)) {
+        if (isContainsCache(id)) {
           list[i] = getFromCache(id);
         } else {
           putToCache(id, list[i]);

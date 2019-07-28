@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/api_model/account.dart';
+import 'package:thi_trac_nghiem/ui/widget/about_tile.dart';
 import 'package:thi_trac_nghiem/utils/dialog_ultis.dart';
-import 'package:thi_trac_nghiem/widget/about_tile.dart';
 
 class CommonDrawer extends StatelessWidget {
   final User user = UserManagement().curUser;

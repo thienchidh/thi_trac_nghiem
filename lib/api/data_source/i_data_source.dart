@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
+import 'package:thi_trac_nghiem/api/config/config_api.dart';
 
 abstract class IDataSource<T> {
   Future<List<T>> getData({
@@ -21,12 +22,12 @@ abstract class DataSource<T> implements IDataSource<T> {
       : _cache = HashMap<String, T>(),
         _client = Client();
 
-  Future<Response> getUrl(String url, {arguments}) {
-    return _client.get(url);
+  Future<Response> getUrl(String url, {Map<String, String> arguments}) {
+    return _client.get(url).timeout(connectTimedOut);
   }
 
-  Future<Response> postUrl(String url, {arguments}) {
-    return _client.post(url);
+  Future<Response> postUrl(String url, {Map<String, String> arguments}) {
+    return _client.post(url).timeout(connectTimedOut);
   }
 
   /// insert or update value
@@ -39,7 +40,7 @@ abstract class DataSource<T> implements IDataSource<T> {
     return _cache[key];
   }
 
-  bool haveCache(String key) {
+  bool isContainsCache(String key) {
     return _cache.containsKey(key);
   }
 }
