@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
+import 'package:thi_trac_nghiem/api/post/post_favorite_question.dart';
+import 'package:thi_trac_nghiem/logic/user_management.dart';
+import 'package:thi_trac_nghiem/model/api_model/favorite.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 import 'package:toast/toast.dart';
@@ -64,18 +67,38 @@ class _QuestionState extends State<QuestionItem> {
                                   ? UIData.primarySwatch
                                   : Colors.black45,
                             ),
-                            onPressed: () {
-                              setState(() {
-                                final x = question.isFavorite;
-                                question.isFavorite = !x;
+                            onPressed: () async {
+                              final x = question.isFavorite;
 
+                              setState(() {
+                                question.isFavorite = !x;
+                              });
+
+                              final msg =
+                                  'Đang ${!x
+                                  ? 'thêm vào'
+                                  : 'xóa khỏi'} danh sách yêu thích';
+                              Toast.show(msg, context);
+
+                              final bool isSuccess =
+                              await PostFavoriteQuestion()
+                                  .postExamSchedule(Favorite(
+                                account: UserManagement().curAccount,
+                                question: question,
+                              ));
+
+                              if (isSuccess) {
                                 final msg =
                                     'Đã ${!x
                                     ? 'thêm vào'
                                     : 'xóa khỏi'} danh sách yêu thích';
-
                                 Toast.show(msg, context);
-                              });
+                              } else {
+                                setState(() {
+                                  question.isFavorite = x;
+                                });
+                                Toast.show('Có lỗi xảy ra', context);
+                              }
                             },
                           ),
                         ),

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:meta/meta.dart';
 import 'package:thi_trac_nghiem/api/config/config_api.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
+import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 
 class QuestionDataSource extends DataSource<Question> {
@@ -19,21 +20,25 @@ class QuestionDataSource extends DataSource<Question> {
 
   String _startId;
   String _keyWord;
+  String _studentCode;
 
   @override
   Future<List<Question>> getData({bool isFirstLoading}) async {
     String key = makeKeyCacheList([_keyWord, _startId]);
-    if (_cacheList.containsKey(key)) {
-      final cacheResult = _fetchCacheResult(key);
-      return cacheResult != null ? cacheResult : _fetchNetworkResult();
+    if (UserManagement().curExamDoing == null) {
+      if (_cacheList.containsKey(key)) {
+        final cacheResult = _fetchCacheResult(key);
+        return cacheResult != null ? cacheResult : _fetchNetworkResult();
+      }
     }
     return _fetchNetworkResult();
   }
 
   @override
   void setParameter({@required List<String> parameter}) {
-    assert(parameter.length >= 1);
+    assert(parameter.length >= 2);
     _keyWord = parameter.first;
+    _studentCode = parameter[1];
     _startId = '0';
   }
 
@@ -44,7 +49,7 @@ class QuestionDataSource extends DataSource<Question> {
   }
 
   String _getPath() {
-    return '$baseUrl/apiThitracnghiem/api01/General?doing=getListQuestion&startId=$_startId&key=$_keyWord';
+    return '$baseUrl/apiThitracnghiem/api01/General?doing=getListQuestion&startId=$_startId&key=$_keyWord&mssv=$_studentCode';
   }
 
   Future<List<Question>> _fetchNetworkResult() async {
@@ -74,5 +79,9 @@ class QuestionDataSource extends DataSource<Question> {
       print(e);
       throw StateError('$e');
     }
+  }
+
+  void cleanup() {
+    _cacheList.clear();
   }
 }

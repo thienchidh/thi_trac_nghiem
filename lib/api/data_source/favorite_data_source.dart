@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:thi_trac_nghiem/api/config/config_api.dart';
@@ -8,13 +7,9 @@ import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 class FavoriteDataSource extends DataSource<Question> {
   static final _singleton = FavoriteDataSource._();
 
-  final Map<String, ListQuestions> _cacheList;
-
   factory FavoriteDataSource() => _singleton;
 
-  FavoriteDataSource._()
-      : _cacheList = HashMap<String, ListQuestions>(),
-        super();
+  FavoriteDataSource._() : super();
 
   String _startId;
   String _studentCode;
@@ -22,11 +17,6 @@ class FavoriteDataSource extends DataSource<Question> {
   @override
   Future<List<Question>> getData(
       {Map<String, dynamic> parameter, bool isFirstLoading}) async {
-    String key = makeKeyCacheList([_studentCode, _startId]);
-    if (_cacheList.containsKey(key)) {
-      final cacheResult = _fetchCacheResult(key);
-      return cacheResult != null ? cacheResult : _fetchNetworkResult();
-    }
     return _fetchNetworkResult();
   }
 
@@ -35,12 +25,6 @@ class FavoriteDataSource extends DataSource<Question> {
     assert(parameter.length >= 1);
     _studentCode = parameter.first;
     _startId = '0';
-  }
-
-  Future<List<Question>> _fetchCacheResult(String key) async {
-    ListQuestions listQuestions = _cacheList[key];
-    _startId = listQuestions.nextId;
-    return listQuestions.listData;
   }
 
   String _getPath() {
@@ -52,9 +36,6 @@ class FavoriteDataSource extends DataSource<Question> {
     try {
       final response = await getUrl('$path');
       final questions = ListQuestions.fromJson(json.decode(response.body));
-
-      String key = makeKeyCacheList([_studentCode, _startId]);
-      _cacheList[key] = questions;
 
       final list = questions.listData;
 

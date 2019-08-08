@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thi_trac_nghiem/logic/bloc/menu_bloc.dart';
+import 'package:thi_trac_nghiem/logic/user_management.dart';
+import 'package:thi_trac_nghiem/model/api_model/account.dart';
 import 'package:thi_trac_nghiem/model/menu.dart';
 import 'package:thi_trac_nghiem/ui/widget/common_drawer.dart';
+import 'package:thi_trac_nghiem/ui/widget/load_more_item.dart';
+import 'package:thi_trac_nghiem/utils/delay_ultis.dart';
 import 'package:thi_trac_nghiem/utils/dialog_ultis.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
@@ -26,22 +30,32 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _bodySliverList(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        return DialogUltis().showDialogLogout(context);
+        return DialogUltis().confirmLogout(context);
       },
-      child: StreamBuilder<List<Menu>>(
-        stream: MenuBloc().menuItems,
-        builder: (context, snapshot) {
-          return snapshot.hasData
-              ? CustomScrollView(
-            //physics: AlwaysScrollableScrollPhysics(),
-            slivers: <Widget>[
-              _appBar(),
-              _bodyGrid(context, snapshot.data),
-            ],
+      child: RefreshIndicator(
+        child: StreamBuilder<List<Menu>>(
+          stream: MenuBloc().menuItems,
+          builder: (context, snapshot) {
+            return snapshot.hasData
+                ? CustomScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              slivers: <Widget>[
+                _appBar(),
+                _bodyGrid(context, snapshot.data),
+              ],
+            )
+                : LoadMoreItem(
+              isVisible: true,
+            );
+          },
+        ),
+        onRefresh: () async {
+          final ultis = DelayUltis(
+            milliseconds: 1000,
           )
-              : Center(
-            child: CircularProgressIndicator(),
-          );
+            ..start();
+          print('_HomeScreenState._bodySliverList.refresh');
+          await ultis.finish();
         },
       ),
     );
@@ -53,7 +67,6 @@ class _HomeScreenState extends State<HomeScreen> {
       pinned: true,
       elevation: 10.0,
       forceElevated: true,
-      expandedHeight: 150.0,
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: false,
         background: Container(
@@ -63,23 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        title: Row(
-          children: <Widget>[
-            FlutterLogo(
-              colors: UIData.primarySwatch,
-              textColor: Colors.white,
-            ),
-            SizedBox(
-              width: 10.0,
-            ),
-            Text(
-              UIData.APP_NAME,
-              style: TextStyle(
-                fontSize: 15.0,
-              ),
-            ),
-          ],
-        ),
+        title: Text(UIData.APP_NAME),
       ),
     );
   }
@@ -87,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget itemMenuStack(BuildContext context, Menu menu) {
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context, '/${menu.item}');
+        Navigator.pushNamed(context, '/${menu.nameRouter}');
       },
       splashColor: Colors.orange,
       child: Card(
@@ -151,18 +148,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _bodyGrid(BuildContext context, List<Menu> menu) {
+    final Iterable<Menu> filter = menu.where((Menu menu) {
+      return menu.validFor == UserType.both ||
+          menu.validFor == UserManagement().curUser.userType;
+    });
+
     return SliverGrid(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount:
-            MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 3,
+        MediaQuery
+            .of(context)
+            .orientation == Orientation.portrait ? 2 : 3,
         mainAxisSpacing: 0.0,
         crossAxisSpacing: 0.0,
         childAspectRatio: 1.0,
       ),
       delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) =>
-            itemMenuStack(context, menu[index]),
-        childCount: menu.length,
+            itemMenuStack(context, filter.elementAt(index)),
+        childCount: filter.length,
       ),
     );
   }

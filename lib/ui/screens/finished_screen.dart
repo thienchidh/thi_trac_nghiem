@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
-import 'package:thi_trac_nghiem/ui/screens/check_answers_screen.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class FinishedScreen extends StatelessWidget {
@@ -12,80 +11,47 @@ class FinishedScreen extends StatelessWidget {
         .of(context)
         .settings
         .arguments;
+    assert(questions != null);
 
     int numCorrectAnswer =
         questions
             .where((q) => q.dapAnDung == q.answerOfUser)
             .length;
 
-    final TextStyle titleStyle = TextStyle(
-        color: Colors.black87, fontSize: 16.0, fontWeight: FontWeight.w500);
-    final TextStyle trailingStyle = TextStyle(
-        color: UIData.primaryColor,
-        fontSize: 20.0,
-        fontWeight: FontWeight.bold);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kết Quả'),
+        title: Text(
+          ModalRoute
+              .of(context)
+              .settings
+              .name
+              .substring(1),
+        ),
         elevation: 0,
       ),
       body: Container(
         height: double.infinity,
         width: double.infinity,
         decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [UIData.primaryColor, UIData.primaryColor],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter)),
+          gradient: LinearGradient(
+              colors: UIData.kitGradients,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter),
+        ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16.0),
-                  title: Text('Số câu hỏi', style: titleStyle),
-                  trailing: Text('${questions.length}', style: trailingStyle),
-                ),
-              ),
+              _buildCard(UIData.NUM_OF_QUESTION, '${questions.length}'),
               const SizedBox(height: 10.0),
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16.0),
-                  title: Text('Điểm', style: titleStyle),
-                  trailing: Text('${numCorrectAnswer / questions.length * 10}',
-                      style: trailingStyle),
-                ),
-              ),
+              _buildCard(
+                  UIData.SCORE, '${numCorrectAnswer / questions.length * 10}'),
               const SizedBox(height: 10.0),
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16.0),
-                  title: Text('Trả lời đúng', style: titleStyle),
-                  trailing: Text('$numCorrectAnswer/${questions.length}',
-                      style: trailingStyle),
-                ),
-              ),
+              _buildCard(UIData.NUM_OF_CORRECT,
+                  '$numCorrectAnswer/${questions.length}'),
               const SizedBox(height: 10.0),
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16.0),
-                  title: Text('Trả lời sai', style: titleStyle),
-                  trailing: Text(
-                      '${questions.length - numCorrectAnswer}/${questions
-                          .length}',
-                      style: trailingStyle),
-                ),
-              ),
+              _buildCard(UIData.NUM_OF_WRONG,
+                  '${questions.length - numCorrectAnswer}/${questions.length}'),
               const SizedBox(height: 20.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,8 +65,12 @@ class FinishedScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     color: UIData.accentColor,
-                    child: Text('Về trang chủ'),
-                    onPressed: () => Navigator.pop(context),
+                    child: Text(UIData.BACK),
+                    onPressed: () {
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      }
+                    },
                   ),
                   RaisedButton(
                     padding: const EdgeInsets.symmetric(
@@ -109,17 +79,11 @@ class FinishedScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     color: UIData.primaryColor,
-                    child: Text('Check đáp án'),
+                    child: Text('Xem đáp án'),
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) {
-                            return CheckAnswersScreen(
-                              questions: questions,
-                            );
-                          },
-                        ),
-                      );
+                      Navigator.pushNamed(
+                          context, '/${UIData.CHECK_ANSWER_ROUTE_NAME}',
+                          arguments: questions);
                     },
                   ),
                 ],
@@ -131,3 +95,25 @@ class FinishedScreen extends StatelessWidget {
     );
   }
 }
+
+Widget _buildCard(String title, String trailing) {
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+    child: ListTile(
+      contentPadding: const EdgeInsets.all(16.0),
+      title: Text(title, style: _titleStyle),
+      trailing: Text(trailing, style: _trailingStyle),
+    ),
+  );
+}
+
+const TextStyle _titleStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 16.0,
+  fontWeight: FontWeight.w500,
+);
+const TextStyle _trailingStyle = TextStyle(
+  color: UIData.primaryColor,
+  fontSize: 20.0,
+  fontWeight: FontWeight.bold,
+);

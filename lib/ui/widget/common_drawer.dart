@@ -3,12 +3,16 @@ import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/api_model/account.dart';
 import 'package:thi_trac_nghiem/ui/widget/about_tile.dart';
 import 'package:thi_trac_nghiem/utils/dialog_ultis.dart';
+import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class CommonDrawer extends StatelessWidget {
-  final User user = UserManagement().curUser;
-
   @override
   Widget build(BuildContext context) {
+    final User user = UserManagement().curUser;
+    final String code = user.userType == UserType.teacher
+        ? UserManagement().curTeacherCode
+        : user.maso;
+
     final textStyle = TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0);
 
     final list = user.name.split(' ');
@@ -23,7 +27,7 @@ class CommonDrawer extends StatelessWidget {
               user.name,
             ),
             accountEmail: Text(
-              user.maso,
+              code,
             ),
             currentAccountPicture: CircleAvatar(
               child: Text(
@@ -37,38 +41,24 @@ class CommonDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text(
-              'Profile',
+              UIData.HOME,
               style: textStyle,
             ),
             leading: Icon(
-              Icons.person,
+              Icons.home,
               color: Colors.blue,
             ),
-          ),
-          ListTile(
-            title: Text(
-              'Timeline',
-              style: textStyle,
-            ),
-            leading: Icon(
-              Icons.timeline,
-              color: Colors.cyan,
-            ),
-          ),
-          ListTile(
-            title: Text(
-              'Settings',
-              style: textStyle,
-            ),
-            leading: Icon(
-              Icons.settings,
-              color: Colors.brown,
-            ),
+            onTap: () {
+              Navigator.popUntil(
+                context,
+                ModalRoute.withName('/${UIData.HOME_ROUTE_NAME}'),
+              );
+            },
           ),
           Divider(),
           ListTile(
             title: Text(
-              'Logout',
+              UIData.LOGOUT,
               style: textStyle,
             ),
             leading: Icon(
@@ -76,7 +66,7 @@ class CommonDrawer extends StatelessWidget {
               color: Colors.redAccent,
             ),
             onTap: () {
-              return DialogUltis().showDialogLogout(context);
+              return DialogUltis().confirmLogout(context);
             },
           ),
           Divider(),

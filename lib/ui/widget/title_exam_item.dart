@@ -10,7 +10,7 @@ import 'package:thi_trac_nghiem/ui/widget/action_timer.dart';
 import 'package:thi_trac_nghiem/ui/widget/timer_widget.dart';
 import 'package:toast/toast.dart';
 
-class TitleExamItem extends StatelessWidget {
+class TitleExamItem extends StatefulWidget {
   final Exam exam;
 
   TitleExamItem({this.exam})
@@ -18,53 +18,71 @@ class TitleExamItem extends StatelessWidget {
         super();
 
   @override
+  _TitleExamItemState createState() => _TitleExamItemState();
+}
+
+class _TitleExamItemState extends State<TitleExamItem> {
+  @override
   Widget build(BuildContext context) {
+    final exam = widget.exam;
     final timeStart = serverDateFormat.parse(exam.thoiGianBatDau);
     final timeEnd = serverDateFormat.parse(exam.thoiGianKetThuc);
+    final curTime = serverDateFormat.parse(exam.timeserver);
 
-    int distance = 0;
+    int duration = 0;
     if (exam.status == Exam.UPCOMING) {
-      distance = timeStart.difference(DateTime.now()).inSeconds;
+      duration = timeStart
+          .difference(curTime)
+          .inSeconds;
+      duration = max(duration, 1);
     } else if (exam.status == Exam.RUNNING) {
-      distance = timeEnd.difference(DateTime.now()).inSeconds;
+      duration = timeEnd
+          .difference(curTime)
+          .inSeconds;
     } else {
-      distance = 0;
+      //Exam.FINISHED
+      duration = 0;
     }
-    distance = max(distance, 0);
 
-    return Container(
-      child: ListTile(
-        leading: CircleAvatar(
-          child: Text(
-            '${exam.lop}',
-            style: TextStyle(
-              fontSize: 10.0,
-            ),
+    return ListTile(
+      leading: CircleAvatar(
+        child: Text(
+          '${exam.lop}',
+          style: TextStyle(
+            fontSize: 10.0,
           ),
         ),
-        title: Text('${exam.maLoaiKt}'),
-        trailing: Text('${exam.status}'),
-        subtitle: BlocProvider(
-          builder: (context) {
-            return TimerBloc(
-              ticker: Ticker(),
-              voidCallbackOnFinished: () {
-                Toast.show(
-                    'Kỳ thi ${exam.maLoaiKt} đã bắt đầu, hãy vào làm ngay nào.',
-                    context);
-              },
-              duration: distance,
-            );
-          },
-          child: TimerWidget(
-            timerTextStyle: const TextStyle(
-              fontSize: 14.0,
-            ),
-            actions: ActionsTimerRunningExam(),
+      ),
+      title: Center(
+        child: Text('${exam.maLoaiKt} - ${exam.tenBaiThi}'),
+      ),
+      trailing: Text('${exam.status}'),
+      subtitle: BlocProvider(
+        builder: (context) {
+          return TimerBloc(
+            ticker: Ticker(),
+            onFinished: () => _onFinished(),
+            duration: duration,
+          );
+        },
+        child: TimerWidget(
+          timerTextStyle: const TextStyle(
+            fontSize: 14.0,
           ),
+          actions: ActionsTimerRunningExam(),
         ),
-        isThreeLine: true,
       ),
     );
+  }
+
+  void _onFinished() {
+    setState(() {
+      widget.exam.status = Exam.RUNNING;
+    });
+
+    Toast.show(
+        'Kỳ thi ${widget.exam
+            .maLoaiKt} đã bắt đầu, các bạn hãy vào làm ngay nào.',
+        context);
   }
 }

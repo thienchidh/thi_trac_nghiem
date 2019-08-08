@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>NSContactsUsageDescription</key>
+    <string>This application needs to the contacts usage description permission</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>This application needs the calendars usage description permission</string>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>This application needs the apple music usage description permission</string>
+    <key>NSMotionUsageDescription</key>
+    <string>This application needs the motion usage description permission</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+    <string>This application needs the location always usage description permission</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This application needs the location when in use usage description permission </string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This application needs to access your microphone</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>This application needs the speech recognition permission</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>

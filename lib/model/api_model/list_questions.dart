@@ -80,12 +80,12 @@ class Question {
     dapAnDung = json['dap_an_dung'];
     rate = json['rate'];
     thuocChuong = json['thuoc_chuong'];
+    isFavorite = json['isFavourite'] == '1';
 
     _computeAndInit();
   }
 
   void _computeAndInit() {
-    isFavorite = false;
     answerOfUser = undefinedAnswer;
 
     final pos = int.parse(position);
@@ -115,6 +115,7 @@ class Question {
     data['dap_an_dung'] = this.dapAnDung;
     data['rate'] = this.rate;
     data['thuoc_chuong'] = this.thuocChuong;
+    data['isFavourite'] = this.isFavorite ? '1' : '0';
     return data;
   }
 

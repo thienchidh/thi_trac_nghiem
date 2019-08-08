@@ -1,16 +1,20 @@
-import 'dart:collection';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:thi_trac_nghiem/api/config/config_api.dart';
+import 'package:thi_trac_nghiem/api/data_source/doing_exam_data_source.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
-import 'package:thi_trac_nghiem/api/data_source/question_exam_data_source.dart';
 import 'package:thi_trac_nghiem/api/post/submit_answer.dart';
 import 'package:thi_trac_nghiem/logic/bloc/data_bloc.dart';
 import 'package:thi_trac_nghiem/logic/bloc/timer_bloc.dart';
+import 'package:thi_trac_nghiem/logic/convert_question.dart';
 import 'package:thi_trac_nghiem/logic/ticker.dart';
 import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/answer.dart';
+import 'package:thi_trac_nghiem/model/api_model/exam_questions.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
+import 'package:thi_trac_nghiem/model/api_model/list_students.dart';
 import 'package:thi_trac_nghiem/ui/screens/base_screen_state.dart';
 import 'package:thi_trac_nghiem/ui/screens/submit_answer_screen.dart';
 import 'package:thi_trac_nghiem/ui/widget/action_timer.dart';
@@ -29,8 +33,8 @@ class ExamScreen extends StatefulWidget {
   _ExamScreenState createState() => _ExamScreenState();
 }
 
-class _ExamScreenState extends BaseScreenState<Question> {
-  final _controller = PageController();
+class _ExamScreenState extends BaseScreenState<ExamQuestions> {
+  final _controller = PageController(keepPage: true);
 
   final List<Question> _questions;
 
@@ -61,10 +65,23 @@ class _ExamScreenState extends BaseScreenState<Question> {
       appBar: AppBar(
         title: BlocProvider(
           builder: (context) {
+            final exam = UserManagement().curExamDoing;
+
+            final timeEnd = serverDateFormat.parse(exam.thoiGianKetThuc);
+            final curTime = serverDateFormat.parse(exam.timeserver);
+
+            int duration = 0;
+            if (exam.status == Exam.RUNNING) {
+              duration += timeEnd
+                  .difference(curTime)
+                  .inSeconds;
+            }
+            duration = max(duration, 0);
+
             return TimerBloc(
               ticker: Ticker(),
-              voidCallbackOnFinished: () => submitAnswer(),
-              duration: 100,
+              onFinished: () => finishExam(),
+              duration: duration,
             );
           },
           child: TimerWidget(
@@ -74,14 +91,15 @@ class _ExamScreenState extends BaseScreenState<Question> {
       ),
       drawer: CommonDrawer(),
       endDrawer: CurrentQuestionsDrawer(
-        questions: _questions,
-        onSelectQuestionCallBack: jumpToPage,
-        onSubmitCallback: () => submitAnswer(),
+        items: _questions,
+        onSelectItem: jumpToPage,
+        onSubmit: () => submitAnswer(),
+        onRandom: () => randomAnswer(),
       ),
-      body: StreamBuilder<DataListState<Question>>(
+      body: StreamBuilder<DataListState<ExamQuestions>>(
         stream: bloc.dataList,
         builder: (BuildContext context,
-            AsyncSnapshot<DataListState<Question>> snapshot) {
+            AsyncSnapshot<DataListState<ExamQuestions>> snapshot) {
           if (snapshot.hasError) {
             return ErrorItem(
               onClick: () => refresh(),
@@ -104,32 +122,39 @@ class _ExamScreenState extends BaseScreenState<Question> {
     super.dispose();
   }
 
-  Widget buildPage(AsyncSnapshot<DataListState<Question>> snapshot) {
-    final UnmodifiableListView<Question> data = snapshot.data.listData;
+  Widget buildPage(AsyncSnapshot<DataListState<ExamQuestions>> snapshot) {
+    final List<ExamQuestions> listData = []..addAll(snapshot.data.listData);
+
+    if (listData.isEmpty) {
+      listData.add(ExamQuestions(listCauHoiDetails: []));
+    }
+
+    final ExamQuestions data = listData.first;
     final bool isLoading = snapshot.data.isLoading;
     final Object error = snapshot.data.error;
 
+    ConvertQuestion().convertAnswerToDest(data);
     _questions.clear();
-    _questions.addAll(data);
+    _questions.addAll(data.listCauHoiDetails);
 
     return WillPopScope(
-      onWillPop: () async {
-        final bool isClose = await DialogUltis().showAlertDialog(context);
-        if (isClose) {
-          UserManagement().curExam = null;
-        }
-        return isClose;
-      },
+      onWillPop: () => DialogUltis().showAlertDialog(context),
       child: PageView.builder(
         controller: _controller,
         scrollDirection: Axis.horizontal,
-        itemCount: data.length + 1,
+        itemCount: _questions.length + 1,
         itemBuilder: (context, index) {
-          if (index < data.length) {
-            return QuestionItem(data[index], index);
+          if (index < _questions.length) {
+            if (_questions.isNotEmpty) {
+              if (index % 5 == 0) {
+                saveAnswer();
+              }
+            }
+            return QuestionItem(_questions[index], index);
           }
 
-          if (data.isNotEmpty) {
+          if (_questions.isNotEmpty) {
+            saveAnswer();
             return SubmitScreen(
               onSubmit: () => submitAnswer(),
             );
@@ -148,7 +173,7 @@ class _ExamScreenState extends BaseScreenState<Question> {
     );
   }
 
-  Future<void> jumpToPage(index) async {
+  Future<void> jumpToPage(int index) async {
     final scaffoldState = scaffoldKey.currentState;
 
     final isDrawerOpen = scaffoldState.isDrawerOpen;
@@ -163,46 +188,104 @@ class _ExamScreenState extends BaseScreenState<Question> {
     _controller.jumpToPage(index);
   }
 
-  Future<void> submitAnswer() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
+  Future<bool> saveAnswer() async {
+    return await SubmitAnswer().submitAnswer(
+      StudentAnswer(
+        account: UserManagement().curAccount,
+        exam: UserManagement().curExamDoing,
+        questions: _questions,
+      ),
+      isOnlySave: true,
+    );
+  }
 
-      await jumpToPage(_questions.length); // we have (_questions.length+1) page
+  bool _checkIsMarkAll() {
+    for (final question in _questions) {
+      if (question.answerOfUser == Question.undefinedAnswer) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Future<void> submitAnswer() async {
+    if (!_checkIsMarkAll()) {
+      bool isOk = await DialogUltis().showAlertDialog(
+        context,
+        title: 'Bạn chưa trả lời hết các câu hỏi',
+        content: UIData.RANDOM_DIALOG_TEXT,
+      );
+
+      if (isOk) {
+        randomAnswer();
+      } else {
+        Toast.show(
+            'Bạn phải trả lời tất cả câu hỏi mới được nộp bài.', context);
+        return;
+      }
+    }
+
+    bool isOk = await DialogUltis().showAlertDialog(
+      context,
+      title: UIData.CONFIRM,
+      content: UIData.SUBMIT_EXAM,
+    );
+
+    if (!isOk) {
+      return;
+    }
+
+    await finishExam();
+  }
+
+  Future<void> finishExam() async {
+    print('_ExamScreenState.finishExam');
+    try {
       final answer = StudentAnswer(
         account: UserManagement().curAccount,
-        exam: UserManagement().curExam,
+        exam: UserManagement().curExamDoing,
         questions: _questions,
       );
 
       final bool submitAnswer = await SubmitAnswer().submitAnswer(answer);
 
       if (!submitAnswer) {
-        Toast.show('Nộp bài Không thành công!', context);
+        Toast.show('Nộp bài không thành công!', context);
         return;
       }
-      Toast.show('Đã nộp bài', context);
-
-      UserManagement().curExam = null;
-      await Navigator.pushReplacementNamed(
+      Toast.show(
+        'Đã nộp bài, bạn sẽ được đưa về trang chủ, khi kỳ thi kết thúc, bạn có thể xem điểm ở mục lịch sử',
         context,
-        '/${UIData.FINISHED_ROUTE_NAME}',
-        arguments: _questions,
+        duration: 5,
+      );
+
+      UserManagement().curExamDoing = null;
+
+      Navigator.popUntil(
+        context,
+        ModalRoute.withName('/${UIData.HOME_ROUTE_NAME}'),
       );
     } catch (e) {
-      Toast.show('Có lỗi xảy ra!', context);
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
+      Toast.show(UIData.ERROR_OCCURRED, context);
     }
   }
 
   @override
   List<String> buildDataSourceParameter() =>
-      [UserManagement().curUser.maso, UserManagement().curExam.maLoaiKt];
+      [UserManagement().curExamDoing.maLoaiKt, UserManagement().curUser.maso];
 
   @override
-  DataSource<Question> initDataSource() => QuestionExamDataSource();
+  IDataSource<ExamQuestions> initDataSource() => DoingExamDataSource();
+
+  Future<void> randomAnswer() async {
+    final random = Random();
+    for (final question in _questions) {
+      if (question.answerOfUser == Question.undefinedAnswer) {
+        final listDapAn = question.listDapAn;
+        question.answerOfUser = listDapAn[random.nextInt(listDapAn.length)];
+      }
+    }
+    Toast.show('Đã chọn ngẫu nhiên những câu bạn chưa làm!', context);
+    await jumpToPage(_questions.length); // we have (_questions.length+1) page
+  }
 }

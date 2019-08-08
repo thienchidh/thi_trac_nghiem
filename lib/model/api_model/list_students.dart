@@ -1,3 +1,5 @@
+import 'package:thi_trac_nghiem/api/config/config_api.dart';
+
 class ListStudents {
   String lop;
   List<Student> listInfoSinhvien;
@@ -70,6 +72,7 @@ class Exam {
   String lop;
   String status;
   String tenBaiThi;
+  String timeserver;
 
   Exam({this.maLoaiKt,
     this.thoiGianBatDau,
@@ -77,7 +80,8 @@ class Exam {
     this.thoiGianKetThuc,
     this.lop,
     this.status,
-    this.tenBaiThi});
+    this.tenBaiThi,
+    this.timeserver});
 
   Exam.fromJson(Map<String, dynamic> json) {
     maLoaiKt = json['ma_loai_kt'];
@@ -85,8 +89,9 @@ class Exam {
     baoLau = json['bao_lau'];
     thoiGianKetThuc = json['thoi_gian_ket_thuc'];
     lop = json['lop'];
-    status = json['status'];
+    status = json[STATUS];
     tenBaiThi = json['ten_bai_thi'];
+    timeserver = json['timeserver'];
   }
 
   Map<String, dynamic> toJson() {
@@ -96,8 +101,9 @@ class Exam {
     data['bao_lau'] = this.baoLau;
     data['thoi_gian_ket_thuc'] = this.thoiGianKetThuc;
     data['lop'] = this.lop;
-    data['status'] = this.status;
+    data[STATUS] = this.status;
     data['ten_bai_thi'] = this.tenBaiThi;
+    data['timeserver'] = this.timeserver;
     return data;
   }
 
@@ -105,6 +111,7 @@ class Exam {
     final defaultValue = 'null';
     return {
       'bai_thi': maLoaiKt != null ? maLoaiKt : defaultValue,
+      'ten_bai_thi': tenBaiThi != null ? tenBaiThi : defaultValue,
       'thoi_gian_bat_dau':
       thoiGianBatDau != null ? thoiGianBatDau : defaultValue,
       'bao_lau': baoLau != null ? baoLau : defaultValue,

@@ -18,7 +18,7 @@ class FavoriteScreen extends StatefulWidget {
 
 class _FavoriteScreenState extends ListTypeScreenState<Question> {
   @override
-  DataSource<Question> initDataSource() => FavoriteDataSource();
+  IDataSource<Question> initDataSource() => FavoriteDataSource();
 
   @override
   List<String> buildDataSourceParameter() => [UserManagement().curUser.maso];
@@ -36,15 +36,16 @@ class _FavoriteScreenState extends ListTypeScreenState<Question> {
 
     return CustomScrollView(
       controller: scrollController,
-      //physics: AlwaysScrollableScrollPhysics(),
+      physics: AlwaysScrollableScrollPhysics(),
       slivers: <Widget>[
         SliverAppBar(
-          // TODO
-          title: Text('demo'),
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          titleSpacing: 0.0,
-          floating: true,
+          title: Text(
+            ModalRoute
+                .of(context)
+                .settings
+                .name
+                .substring(1),
+          ),
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(

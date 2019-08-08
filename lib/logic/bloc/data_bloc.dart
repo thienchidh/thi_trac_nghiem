@@ -148,7 +148,7 @@ class DataBloc<T> {
     yield latestState.copyWith(
         isLoading: true, listData: loadFirstPage ? [] : null);
 
-    DelayUltis ultis = DelayUltis(milliseconds: loadFirstPage ? 1500 : 50);
+    DelayUltis ultis = DelayUltis(milliseconds: loadFirstPage ? 250 : 50);
     ultis.start();
 
     try {

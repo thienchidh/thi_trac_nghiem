@@ -8,7 +8,7 @@ class DialogUltis {
     BuildContext context, {
         String title = 'Xác nhận thoát?',
         String content = 'Bạn có muốn thoát?',
-  }) async {
+      }) {
     return showDialog<bool>(
       context: context,
       builder: (_) {
@@ -17,12 +17,16 @@ class DialogUltis {
           title: Text(title),
           actions: <Widget>[
             FlatButton(
-              child: Text('Không'),
-              onPressed: () => Navigator.pop(context, false),
+              child: Text(UIData.YES),
+              onPressed: () {
+                return Navigator.pop(context, true);
+              },
             ),
             FlatButton(
-              child: Text('Có'),
-              onPressed: () => Navigator.pop(context, true),
+              child: Text(UIData.NO),
+              onPressed: () {
+                return Navigator.pop(context, false);
+              },
             ),
           ],
         );
@@ -30,8 +34,8 @@ class DialogUltis {
     );
   }
 
-  Future<bool> showDialogLogout(BuildContext context) {
-    return showDialog<bool>(
+  Future<bool> confirmLogout(BuildContext context) async {
+    return await showDialog<bool>(
       context: context,
       builder: (_) {
         final user = UserManagement().curUser;
@@ -42,20 +46,13 @@ class DialogUltis {
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text('Yes'),
+              child: Text(UIData.YES),
               onPressed: () {
-                UserManagement().isAutoLogin = false;
-
-                // TODO
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/${UIData.LOGIN_ROUTE_NAME}',
-                      (_) => false,
-                );
+                UserManagement().logout(context);
               },
             ),
             FlatButton(
-              child: Text('No'),
+              child: Text(UIData.NO),
               onPressed: () {
                 Navigator.pop(context, false);
               },

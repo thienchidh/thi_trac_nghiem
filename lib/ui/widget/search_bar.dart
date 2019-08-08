@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:speech_recognition/speech_recognition.dart';
 
 class SearchBar extends StatefulWidget {
-  final Function performSearch;
-  final Function performOpenDrawer;
+  final void Function(String keyWord) onSearch;
+  final void Function() onOpenDrawer;
 
   const SearchBar(
-      {Key key, @required this.performSearch, @required this.performOpenDrawer})
-      : super(key: key);
+      {Key key, @required this.onSearch, @required this.onOpenDrawer})
+      : assert(onSearch != null),
+        assert(onOpenDrawer != null),
+        super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -16,15 +18,15 @@ class SearchBar extends StatefulWidget {
 }
 
 class _SearchBarState extends State<SearchBar> {
-  String mLocale = "vi_VN";
+  static const String mLocale = "vi_VN";
 
   final List<String> listSuggestions;
   _SearchAppBarDelegate _searchDelegate;
 
   _SearchBarState()
+      :
   //TODO
-//      : listSuggestions = List.from(words.all),
-      : listSuggestions = [],
+        listSuggestions = [],
         super();
 
   SpeechRecognition _speechRecognition;
@@ -58,7 +60,7 @@ class _SearchBarState extends State<SearchBar> {
     _speechRecognition.setRecognitionCompleteHandler(() {
       print('setRecognitionCompleteHandler._resultText =  $_resultText');
       setState(() => _isListening = false);
-      widget.performSearch(_resultText);
+      widget.onSearch(_resultText);
     });
 
     _speechRecognition.activate().then(
@@ -79,7 +81,7 @@ class _SearchBarState extends State<SearchBar> {
                 color: Colors.black54,
               ),
               onPressed: () {
-                widget.performOpenDrawer();
+                widget.onOpenDrawer();
               },
             ),
             Expanded(
@@ -134,7 +136,7 @@ class _SearchBarState extends State<SearchBar> {
     );
     if (selected != null) {
       setState(() => _resultText = selected);
-      widget.performSearch(_resultText);
+      widget.onSearch(_resultText);
     }
   }
 }

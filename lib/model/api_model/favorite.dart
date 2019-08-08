@@ -5,21 +5,19 @@ import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 class Favorite {
   Account account;
   Question question;
-  int isFavorite;
 
-  Favorite(
-      {@required this.account,
-      @required this.question,
-      @required this.isFavorite})
+  Favorite({
+    @required this.account,
+    @required this.question,
+  })
       : assert(account != null),
-        assert(question != null),
-        assert(isFavorite != null);
+        assert(question != null);
 
   Map<String, String> toMap() {
     return account.toMap()
       ..addAll({
         'idQuestion': question.id,
-        'isFavourite': '$isFavorite',
+        'isFavourite': '${question.isFavorite ? 1 : 0}',
       });
   }
 }

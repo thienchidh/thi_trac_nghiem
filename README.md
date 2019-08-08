@@ -1,6 +1,6 @@
 # thi_trac_nghiem
 
-Thi Trắc Nghiệm
+Thi trắc nghiệm
 
 ## Getting Started
 

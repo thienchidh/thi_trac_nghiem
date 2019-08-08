@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
@@ -7,27 +6,19 @@ import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
 import 'package:thi_trac_nghiem/model/api_model/exam_questions.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 
+// not using cache
 class QuestionExamDataSource extends DataSource<Question> {
   static final _singleton = QuestionExamDataSource._();
 
-  final Map<String, ExamQuestions> _cacheList;
-
   factory QuestionExamDataSource() => _singleton;
 
-  QuestionExamDataSource._()
-      : _cacheList = HashMap<String, ExamQuestions>(),
-        super();
+  QuestionExamDataSource._() : super();
 
   String _studentCode;
   String _examCode;
 
   @override
   Future<List<Question>> getData({bool isFirstLoading}) async {
-    String key = makeKeyCacheList([_studentCode, _examCode]);
-    if (_cacheList.containsKey(key)) {
-      final cacheResult = _fetchCacheResult(key);
-      return cacheResult != null ? cacheResult : _fetchNetworkResult();
-    }
     return _fetchNetworkResult();
   }
 
@@ -36,11 +27,6 @@ class QuestionExamDataSource extends DataSource<Question> {
     assert(parameter.length >= 2);
     _studentCode = parameter.first;
     _examCode = parameter[1];
-  }
-
-  Future<List<Question>> _fetchCacheResult(String key) async {
-    ExamQuestions listQuestions = _cacheList[key];
-    return listQuestions.listCauHoiDetails;
   }
 
   String _getPath() {
@@ -52,9 +38,6 @@ class QuestionExamDataSource extends DataSource<Question> {
     try {
       final response = await getUrl('$path');
       final questions = ExamQuestions.fromJson(json.decode(response.body));
-
-      String key = makeKeyCacheList([_studentCode, _examCode]);
-      _cacheList[key] = questions;
 
       return questions.listCauHoiDetails;
     } catch (e) {

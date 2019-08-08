@@ -31,8 +31,7 @@ class PostExamSchedule {
 
       await ultis.finish();
 
-      return results['status'].toString().toLowerCase() ==
-          STATUS_SUCCESS.toLowerCase();
+      return results[STATUS] == STATUS_SUCCESS;
     } catch (e) {
       print('$e');
       return false;

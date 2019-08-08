@@ -5,6 +5,7 @@ import 'package:synchronized/synchronized.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
 import 'package:thi_trac_nghiem/api/data_source/question_data_source.dart';
 import 'package:thi_trac_nghiem/logic/bloc/data_bloc.dart';
+import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 import 'package:thi_trac_nghiem/ui/screens/base_screen_state.dart';
 import 'package:thi_trac_nghiem/ui/widget/error_item.dart';
@@ -38,10 +39,11 @@ class _SearchScreenState extends ListTypeScreenState<Question> {
   }
 
   @override
-  List<String> buildDataSourceParameter() => [_keyWord];
+  List<String> buildDataSourceParameter() =>
+      [_keyWord, UserManagement().curUser.maso];
 
   @override
-  DataSource<Question> initDataSource() => QuestionDataSource();
+  IDataSource<Question> initDataSource() => QuestionDataSource();
 
   @override
   Widget buildList(AsyncSnapshot<DataListState<Question>> snapshot) {
@@ -51,12 +53,12 @@ class _SearchScreenState extends ListTypeScreenState<Question> {
 
     return CustomScrollView(
       controller: scrollController,
-      //physics: AlwaysScrollableScrollPhysics(),
+      physics: AlwaysScrollableScrollPhysics(),
       slivers: <Widget>[
         SliverAppBar(
           title: SearchBar(
-            performSearch: _search,
-            performOpenDrawer: () {
+            onSearch: _search,
+            onOpenDrawer: () {
               final currentState = scaffoldKey.currentState;
               if (!currentState.isDrawerOpen) {
                 currentState.openDrawer();

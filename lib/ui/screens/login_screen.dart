@@ -28,6 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isLoading = true;
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -50,12 +52,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget loginBody() {
     return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          loginHeader(),
-          loginFields(),
-        ],
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            loginHeader(),
+            loginFields(),
+          ],
+        ),
       ),
     );
   }
@@ -190,13 +195,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (_txtEmailController.text.isEmpty ||
                       _txtPasswordController.text.isEmpty) {
                     Toast.show('Bạn phải điền đầy đủ thông tin', context);
+                    setState(() => _isLoading = false);
                     return;
                   }
 
                   if (_isRememberPassword) {
                     _storePassWord(_account);
                   } else {
-                    _storePassWord(Account());
+                    _storePassWord(Account(isStudent: true));
                   }
 
                   // login
@@ -216,9 +222,12 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(
             height: 5.0,
           ),
-          Text(
-            'TẠO MỘT TÀI KHOẢN',
-            style: TextStyle(color: Colors.grey),
+          Tooltip(
+            child: Text(
+              'TẠO MỘT TÀI KHOẢN',
+              style: TextStyle(color: Colors.grey),
+            ),
+            message: 'chưa khả dụng',
           ),
         ],
       ),
@@ -241,6 +250,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _initialize() async {
+    await Future.delayed(Duration(milliseconds: 100)); // this is feature
+
+    DelayUltis ultis = DelayUltis(milliseconds: 900);
+    ultis.start();
+
     try {
       Map<String, String> map = await storage.readAll();
 
@@ -254,14 +268,14 @@ class _LoginScreenState extends State<LoginScreen> {
           password: password,
           isStudent: isStudent,
         );
+        if (username == null || username != null && username.isEmpty) {
+          isStudent = true;
+        }
       });
       _txtEmailController.text = _account.username;
       _txtPasswordController.text = _account.password;
 
       bool isValid(String x) => x != null && x.isNotEmpty;
-
-      DelayUltis ultis = DelayUltis(milliseconds: 3000);
-      ultis.start();
 
       if (UserManagement().isAutoLogin) {
         bool isLoginSuccess = false;
@@ -276,6 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     } finally {
+      ultis.finish();
       setState(() {
         _isLoading = false;
       });

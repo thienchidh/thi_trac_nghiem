@@ -5,22 +5,28 @@ import 'package:thi_trac_nghiem/logic/ticker.dart';
 import 'package:thi_trac_nghiem/ui/widget/action_timer.dart';
 import 'package:thi_trac_nghiem/ui/widget/background_widget.dart';
 import 'package:thi_trac_nghiem/ui/widget/timer_widget.dart';
-import 'package:toast/toast.dart';
 
 class TimerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final int _numOfSecond = ModalRoute.of(context).settings.arguments;
+    final arguments = ModalRoute
+        .of(context)
+        .settings
+        .arguments;
+    assert(arguments is List<dynamic>);
+    final List<dynamic> list = arguments as List<dynamic>;
+    assert(list.length == 2);
+
+    final int duration = list.first;
+    final void Function() onFinished = list.last;
 
     return Scaffold(
       body: BlocProvider(
         builder: (context) {
           return TimerBloc(
             ticker: Ticker(),
-            duration: _numOfSecond,
-            voidCallbackOnFinished: () {
-              Toast.show('finished...', context);
-            },
+            duration: duration,
+            onFinished: () => onFinished(),
           );
         },
         child: Stack(

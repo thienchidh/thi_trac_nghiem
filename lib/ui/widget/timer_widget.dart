@@ -12,8 +12,8 @@ class TimerWidget extends StatelessWidget {
 
   const TimerWidget({
     Key key,
-    @required actions,
-    timerTextStyle = const TextStyle(fontSize: 35),
+    @required ActionsTimer actions,
+    timerTextStyle = const TextStyle(fontSize: 25),
   })  : assert(actions != null),
         _actions = actions,
         _timerTextStyle = timerTextStyle,
@@ -30,28 +30,27 @@ class TimerWidget extends StatelessWidget {
     final minutesStr = minute.toString().padLeft(2, '0');
     final secondsStr = second.toString().padLeft(2, '0');
 
+    final DateTime timeNow = DateTime.now();
+    final DateTime timeDest = timeNow.add(Duration(
+      days: day,
+      hours: hour,
+      minutes: minute,
+      seconds: second,
+    ));
+
+    String text;
     if (day > 0) {
       if (day <= 10) {
-        return Text(
-          '$dayStr ngày $hourStr giờ',
-          style: _timerTextStyle,
-        );
+        text = '$dayStr ngày $hourStr giờ';
+      } else {
+        text = localDateFormat.format(timeDest);
       }
-
-      final DateTime timeDest = DateTime.now().add(Duration(
-        days: day,
-        hours: hour,
-        minutes: minute,
-        seconds: second,
-      ));
-
-      return Text(
-        '${localDateFormat.format(timeDest)}',
-        style: _timerTextStyle,
-      );
+    } else {
+      text = '$hourStr:$minutesStr:$secondsStr';
     }
+
     return Text(
-      '$hourStr:$minutesStr:$secondsStr',
+      text,
       style: _timerTextStyle,
     );
   }

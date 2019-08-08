@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class SubmitScreen extends StatefulWidget {
-  final Function onSubmit;
+  final void Function() onSubmit;
 
   const SubmitScreen({Key key, @required this.onSubmit}) : super(key: key);
 
@@ -20,7 +21,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
           padding: EdgeInsets.all(12.0),
           shape: StadiumBorder(),
           child: Text(
-            'NỘP BÀI',
+            UIData.SUBMIT_EXAM,
             style: TextStyle(color: Colors.white),
           ),
           onPressed: () => widget.onSubmit(),

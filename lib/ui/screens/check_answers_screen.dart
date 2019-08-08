@@ -4,18 +4,24 @@ import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class CheckAnswersScreen extends StatelessWidget {
-  final List<Question> questions;
-
-  const CheckAnswersScreen({
-    Key key,
-    @required this.questions,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    final arguments = ModalRoute
+        .of(context)
+        .settings
+        .arguments;
+    assert(arguments is List<Question>);
+    final List<Question> questions = arguments as List<Question>;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Đáp án'),
+        title: Text(
+          ModalRoute
+              .of(context)
+              .settings
+              .name
+              .substring(1),
+        ),
         elevation: 0,
       ),
       body: Stack(
@@ -30,22 +36,22 @@ class CheckAnswersScreen extends StatelessWidget {
           ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: questions.length + 1,
-            itemBuilder: _buildItem,
+            itemBuilder: (context, index) =>
+                _buildItem(context, index, questions),
           )
         ],
       ),
     );
   }
 
-  Widget _buildItem(BuildContext context, int index) {
+  Widget _buildItem(BuildContext context, int index, List<Question> questions) {
     if (index == questions.length) {
       return RaisedButton(
         child: Text('Xong'),
         onPressed: () {
-          Navigator.popUntil(
-            context,
-            ModalRoute.withName('/${UIData.HOME_ROUTE_NAME}'),
-          );
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
         },
       );
     }

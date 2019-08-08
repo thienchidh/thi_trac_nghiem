@@ -1,3 +1,5 @@
+import 'package:thi_trac_nghiem/api/config/config_api.dart';
+
 class Account {
   String username;
   String password;
@@ -19,11 +21,11 @@ class Account {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Account &&
-          runtimeType == other.runtimeType &&
-          username == other.username &&
-          password == other.password &&
-          isStudent == other.isStudent;
+          other is Account &&
+              runtimeType == other.runtimeType &&
+              username == other.username &&
+              password == other.password &&
+              isStudent == other.isStudent;
 
   @override
   int get hashCode =>
@@ -41,18 +43,25 @@ class User {
   String maso;
   String name;
   String lop;
+  UserType userType;
+
+  static const String TEACHER = 'giangvien';
+  static const String STUDENT = 'sinhvien';
+
+  User();
 
   User.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
+    status = json[STATUS];
     role = json['role'];
     maso = json['maso'];
     name = json['name'];
     lop = json['lop'];
+    userType = (role == TEACHER) ? UserType.teacher : UserType.student;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
+    data[STATUS] = this.status;
     data['role'] = this.role;
     data['maso'] = this.maso;
     data['name'] = this.name;
@@ -63,13 +72,13 @@ class User {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is User &&
-          runtimeType == other.runtimeType &&
-          status == other.status &&
-          role == other.role &&
-          maso == other.maso &&
-          name == other.name &&
-          lop == other.lop;
+          other is User &&
+              runtimeType == other.runtimeType &&
+              status == other.status &&
+              role == other.role &&
+              maso == other.maso &&
+              name == other.name &&
+              lop == other.lop;
 
   @override
   int get hashCode =>
@@ -78,4 +87,11 @@ class User {
       maso.hashCode ^
       name.hashCode ^
       lop.hashCode;
+}
+
+enum UserType {
+  student,
+  teacher,
+  both,
+  none,
 }

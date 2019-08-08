@@ -26,7 +26,7 @@ class LoginApi {
 
       User user = User.fromJson(results);
       if (user.status != STATUS_SUCCESS ||
-          (!account.isStudent ^ (user.role == 'giangvien'))) {
+          (!account.isStudent ^ (user.userType == UserType.teacher))) {
         return null;
       }
 

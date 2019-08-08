@@ -3,6 +3,7 @@ import 'package:thi_trac_nghiem/api/data_source/class_data_source.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
 import 'package:thi_trac_nghiem/logic/bloc/data_bloc.dart';
 import 'package:thi_trac_nghiem/ui/screens/base_screen_state.dart';
+import 'package:thi_trac_nghiem/ui/widget/class_item.dart';
 import 'package:thi_trac_nghiem/ui/widget/error_item.dart';
 import 'package:thi_trac_nghiem/ui/widget/load_more_item.dart';
 
@@ -11,7 +12,7 @@ class ListClassScreen extends StatefulWidget {
   _ListClassScreenState createState() => _ListClassScreenState();
 }
 
-class _ListClassScreenState extends BaseScreenState<String> {
+class _ListClassScreenState extends ListTypeScreenState<String> {
   @override
   void initState() {
     super.initState();
@@ -22,45 +23,43 @@ class _ListClassScreenState extends BaseScreenState<String> {
   List<String> buildDataSourceParameter() => [];
 
   @override
-  DataSource<String> initDataSource() => ClassDataSource();
+  IDataSource<String> initDataSource() => ClassDataSource();
 
+  @deprecated
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<DataListState<String>>(
-      stream: bloc.dataList,
-      builder: (BuildContext context,
-          AsyncSnapshot<DataListState<String>> snapshot) {
-        if (snapshot.hasError) {
-          return ErrorItem(
-            onClick: () => refresh(),
-          );
-        }
-
-        if (!snapshot.hasData) {
-          return LoadMoreItem(
-            isVisible: true,
-          );
-        }
-
-        return buildList(snapshot);
-      },
-    );
+  void loadMore() {
+    // nothing here
   }
 
+  @override
   Widget buildList(AsyncSnapshot<DataListState<String>> snapshot) {
     final data = snapshot.data.listData;
     final isLoading = snapshot.data.isLoading;
     final error = snapshot.data.error;
 
+    final _data = []
+      ..addAll(data)
+      ..sort();
+
     return CustomScrollView(
+      controller: scrollController,
+      physics: AlwaysScrollableScrollPhysics(),
       slivers: <Widget>[
+        SliverAppBar(
+          title: Text(
+            ModalRoute
+                .of(context)
+                .settings
+                .name
+                .substring(1),
+          ),
+        ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) {
+                (context, index) {
               if (index < data.length) {
-                return DropdownMenuItem<String>(
-                  value: data[index],
-                  child: Text(data[index]),
+                return ClassItem(
+                  item: _data[index],
                 );
               }
 

@@ -1,77 +1,84 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_questions.dart';
+import 'package:thi_trac_nghiem/utils/dialog_ultis.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class CurrentQuestionsDrawer extends StatelessWidget {
-  final Function onSelectQuestionCallBack;
-  final Function onSubmitCallback;
+  final void Function(int index) onSelectItem;
+  final void Function() onSubmit;
+  final void Function() onRandom;
 
-  final List<Question> questions;
+  final List<Question> items;
 
-  CurrentQuestionsDrawer(
-      {@required this.questions,
-      @required this.onSelectQuestionCallBack,
-      @required this.onSubmitCallback})
-      : assert(questions != null),
-        assert(onSelectQuestionCallBack != null),
-        assert(onSubmitCallback != null);
+  CurrentQuestionsDrawer({@required this.items,
+    @required this.onSelectItem,
+    @required this.onSubmit,
+    @required this.onRandom})
+      : assert(items != null),
+        assert(onSelectItem != null),
+        assert(onSubmit != null),
+        assert(onRandom != null);
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView.separated(
-        itemCount: questions.length + 1,
+        itemCount: items.length + 1,
         separatorBuilder: (BuildContext context, int index) => Divider(),
         itemBuilder: (BuildContext context, int index) {
-          if (index == questions.length) {
+          if (index == items.length) {
             return Row(
               children: <Widget>[
                 Expanded(
-                  child: RaisedButton(
-                    padding: EdgeInsets.all(12.0),
-                    shape: const StadiumBorder(),
-                    child: Text(
-                      'NỘP BÀI',
-                      style: TextStyle(color: Colors.white),
+                  child: Center(
+                    child: RaisedButton(
+                      padding: EdgeInsets.all(12.0),
+                      shape: const StadiumBorder(),
+                      child: Text(
+                        UIData.SUBMIT_EXAM,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      onPressed: () {
+                        onSubmit();
+                      },
                     ),
-                    onPressed: () {
-                      // TODO confirm ,...
-                      onSubmitCallback();
-                    },
                   ),
                 ),
                 Expanded(
-                  child: RaisedButton(
-                    padding: const EdgeInsets.all(12.0),
-                    shape: const StadiumBorder(),
-                    child: Text(
-                      'Random',
-                      style: TextStyle(color: Colors.white),
+                  child: Center(
+                    child: Tooltip(
+                      child: RaisedButton(
+                        padding: const EdgeInsets.all(12.0),
+                        shape: const StadiumBorder(),
+                        child: Text(
+                          'Random',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () async {
+                          bool isAccept = await DialogUltis().showAlertDialog(
+                            context,
+                            title: UIData.CONFIRM,
+                            content: UIData.RANDOM_DIALOG_TEXT,
+                          );
+
+                          if (isAccept ??= false) {
+                            onRandom();
+                          }
+                        },
+                      ),
+                      message: 'Chọn ngẫu nhiên những đáp án chưa trả lời',
                     ),
-                    onPressed: () {
-                      final random = Random();
-                      for (final question in questions) {
-                        if (question.answerOfUser == Question.undefinedAnswer) {
-                          final listDapAn = question.listDapAn;
-                          question.answerOfUser =
-                              listDapAn[random.nextInt(listDapAn.length)];
-                        }
-                      }
-                      Navigator.pop(context);
-                    },
                   ),
                 ),
               ],
             );
           }
 
-          final question = questions[index];
+          final question = items[index];
           return Tooltip(
             message: question.content,
             child: ListTile(
-              onTap: () => onSelectQuestionCallBack(index),
+              onTap: () => onSelectItem(index),
               leading: CircleAvatar(
                 child: Text('${index + 1}'),
                 backgroundColor:

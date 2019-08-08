@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ErrorItem extends StatelessWidget {
-  final Function onClick;
+  final void Function() onClick;
 
   const ErrorItem({Key key, @required this.onClick})
       : assert(onClick != null),

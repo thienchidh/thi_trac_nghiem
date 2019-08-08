@@ -17,15 +17,20 @@ class SettingExamScreen extends StatefulWidget {
 }
 
 class _SettingExamScreenState extends State<SettingExamScreen> {
-  final DateTime _timeNow;
+  static const GK = 'Giữa kỳ';
+  static const CK = 'Cuối kỳ';
+
+  final DateTime timeNow;
 
   DateTime timeStart;
   String curClass;
   List<String> listClass;
+  String curExamType;
+  List<String> listExamType;
 
   bool isLoading = true;
 
-  DataSource<String> _dataSource;
+  IDataSource<String> _dataSource;
 
   final nameOfExamController = TextEditingController();
 
@@ -33,10 +38,11 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
       TextEditingController(text: _MINUTES_DEFAULT_STR);
 
   _SettingExamScreenState()
-      : _timeNow = DateTime.now().add(Duration(minutes: 30)),
+      : timeNow = DateTime.now(),
         _dataSource = ClassDataSource() {
     listClass = [];
-    timeStart = _timeNow;
+    listExamType = [GK, CK];
+    timeStart = timeNow;
     isLoading = false;
   }
 
@@ -50,6 +56,7 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
       setState(() {
         listClass = result..sort();
         curClass = listClass.first;
+        curExamType = listExamType.first;
         isLoading = false;
       });
     });
@@ -79,6 +86,8 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
                 SizedBox(height: 10.0),
                 buildRowClass(),
                 SizedBox(height: 10.0),
+                buildRowType(),
+                SizedBox(height: 10.0),
                 buildRowTimeStart(),
                 SizedBox(height: 10.0),
                 buildRowNumMinutes(),
@@ -96,7 +105,7 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
     );
   }
 
-  Row buildRowNameExam() {
+  Widget buildRowNameExam() {
     return Row(
       children: <Widget>[
         Expanded(
@@ -116,7 +125,7 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
     );
   }
 
-  Row buildRowTimeStart() {
+  Widget buildRowTimeStart() {
     return Row(
       children: <Widget>[
         Expanded(
@@ -129,16 +138,10 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
               final dateTimeSelected = await _onDatePicker();
               setState(() => timeStart = dateTimeSelected);
             },
-            child: Row(
-              children: <Widget>[
-                Text(
-                  localDateFormat.format(timeStart),
-                  overflow: TextOverflow.ellipsis,
-                  style: _textSetting,
-                ),
-                SizedBox(width: 10.0),
-                Icon(Icons.today),
-              ],
+            child: Text(
+              localDateFormat.format(timeStart),
+              overflow: TextOverflow.ellipsis,
+              style: _textSetting,
             ),
           ),
         ),
@@ -146,7 +149,7 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
     );
   }
 
-  Row buildRowClass() {
+  Widget buildRowClass() {
     return Row(
       children: <Widget>[
         Expanded(
@@ -163,6 +166,35 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
             },
             items: listClass.map<DropdownMenuItem<String>>(
               (String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              },
+            ).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildRowType() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Text('Loại bài thi:'),
+        ),
+        SizedBox(width: 10.0),
+        Expanded(
+          child: DropdownButton<String>(
+            value: curExamType,
+            onChanged: (String value) {
+              setState(() {
+                curExamType = value;
+              });
+            },
+            items: listExamType.map<DropdownMenuItem<String>>(
+                  (String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -193,7 +225,7 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
               if (value.isEmpty) {
                 return _validateForm(value);
               }
-              if (int.parse(value) <= 10) {
+              if (int.parse(value) <= 1) {
                 return 'Quá ngắn';
               }
               return null;
@@ -207,13 +239,15 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
   Future<DateTime> _onDatePicker() async {
     final datePicker = await showDatePicker(
       context: context,
-      initialDate: _timeNow,
-      firstDate: _timeNow,
-      lastDate: DateTime(_timeNow.year, _timeNow.month + 6),
+      initialDate: timeNow,
+      firstDate: timeNow.subtract(
+        const Duration(days: 30),
+      ),
+      lastDate: DateTime(timeNow.year, timeNow.month + 6),
     );
 
     if (datePicker == null) {
-      return _timeNow;
+      return timeNow;
     }
 
     final curTime = TimeOfDay.now();
@@ -223,7 +257,7 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
     );
 
     if (timePicker == null) {
-      return _timeNow;
+      return timeNow;
     }
 
     final year = datePicker.year;
@@ -248,7 +282,9 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
         ExamSchedule(
           account: UserManagement().curAccount,
           exam: Exam(
-            tenBaiThi: nameOfExamController.value.text,
+            tenBaiThi:
+            '${curExamType == GK ? 'GK' : 'CK'}_${nameOfExamController.value
+                .text}',
             thoiGianBatDau: serverDateFormat.format(timeStart),
             baoLau: numOfMinutesDoingController.value.text,
             lop: curClass,
@@ -267,7 +303,7 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
       }
     } catch (e) {
       print(e);
-      Toast.show('Có lỗi xảy ra!', context);
+      Toast.show(UIData.ERROR_OCCURRED, context);
     } finally {
       setState(() {
         isLoading = false;

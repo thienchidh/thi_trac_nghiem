@@ -9,20 +9,20 @@ import 'package:thi_trac_nghiem/logic/ticker.dart';
 class TimerBloc extends Bloc<TimerEvent, TimerState> {
   final Ticker _ticker;
   final int _duration;
-  final Function _voidCallBack;
+  final void Function() _onFinished;
 
   StreamSubscription<int> _tickerSubscription;
 
   TimerBloc({isAutoStart = true,
     @required duration,
     @required Ticker ticker,
-    @required Function voidCallbackOnFinished})
+    @required void Function() onFinished})
       : assert(duration != null),
         assert(ticker != null),
-        assert(voidCallbackOnFinished != null),
+        assert(onFinished != null),
         _ticker = ticker,
         _duration = duration,
-        _voidCallBack = voidCallbackOnFinished {
+        _onFinished = onFinished {
     if (isAutoStart) {
       dispatch(StartTimer(duration: _duration));
     }
@@ -96,7 +96,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       yield TimerRunning(tick.duration);
     } else {
       yield TimerFinished();
-      _voidCallBack();
+      _onFinished();
     }
   }
 }

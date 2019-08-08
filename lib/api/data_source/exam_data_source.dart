@@ -14,6 +14,7 @@ class ExamDataSource extends DataSource<Exam> {
   ExamDataSource._() : super();
 
   String _lop;
+  String _studentCode;
 
   @override
   Future<List<Exam>> getData({bool isFirstLoading}) async {
@@ -22,12 +23,13 @@ class ExamDataSource extends DataSource<Exam> {
 
   @override
   void setParameter({@required List<String> parameter}) {
-    assert(parameter.length >= 1);
+    assert(parameter.length >= 2);
     _lop = parameter.first;
+    _studentCode = parameter[1];
   }
 
   String _getPath() {
-    return '$baseUrl/apiThitracnghiem/api01/General?doing=getInfo&actionInfo=getListInfoOfLop&lop=$_lop';
+    return '$baseUrl/apiThitracnghiem/api01/General?doing=getInfo&actionInfo=getListInfoOfLop&lop=$_lop&mssv=$_studentCode';
   }
 
   Future<List<Exam>> _fetchNetworkResult() async {

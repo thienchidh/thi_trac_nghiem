@@ -20,7 +20,9 @@ class StudentAnswer {
 
     for (Question question in questions) {
       final indexOfAnswer = question.getIndexOfAnswer();
-      list[indexOfAnswer].add(question.id);
+      if (indexOfAnswer >= 0 && indexOfAnswer < question.listDapAn.length) {
+        list[indexOfAnswer].add(question.id);
+      }
     }
 
     for (int i = 0; i < other; i++) {

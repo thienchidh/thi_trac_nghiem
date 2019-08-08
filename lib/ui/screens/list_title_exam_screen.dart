@@ -1,8 +1,14 @@
+import 'dart:collection';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:thi_trac_nghiem/api/config/config_api.dart';
 import 'package:thi_trac_nghiem/api/data_source/exam_data_source.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
 import 'package:thi_trac_nghiem/logic/bloc/data_bloc.dart';
 import 'package:thi_trac_nghiem/logic/user_management.dart';
+import 'package:thi_trac_nghiem/main.dart';
+import 'package:thi_trac_nghiem/model/api_model/account.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_students.dart';
 import 'package:thi_trac_nghiem/ui/screens/base_screen_state.dart';
 import 'package:thi_trac_nghiem/ui/widget/error_item.dart';
@@ -23,10 +29,11 @@ class _ListTitleExamScreenState extends ListTypeScreenState<Exam> {
   }
 
   @override
-  List<String> buildDataSourceParameter() => [UserManagement().curUser.lop];
+  List<String> buildDataSourceParameter() =>
+      [UserManagement().curUser.lop, UserManagement().curUser.maso];
 
   @override
-  DataSource<Exam> initDataSource() => ExamDataSource();
+  IDataSource<Exam> initDataSource() => ExamDataSource();
 
   @deprecated
   @override
@@ -42,29 +49,49 @@ class _ListTitleExamScreenState extends ListTypeScreenState<Exam> {
 
     return CustomScrollView(
       controller: scrollController,
-      //physics: AlwaysScrollableScrollPhysics(),
+      physics: AlwaysScrollableScrollPhysics(),
       slivers: <Widget>[
         SliverAppBar(
           title: Text(
-            ModalRoute.of(context).settings.name,
+            ModalRoute
+                .of(context)
+                .settings
+                .name
+                .substring(1),
           ),
-          pinned: true,
-          floating: true,
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) {
+                (context, index) {
               if (index < data.length) {
+                final exam = data[index];
+                if (exam.status != Exam.UPCOMING) {
+                  UserManagement().curExamDoing = exam;
+                } else if (exam.status == Exam.UPCOMING) {
+                  if (_computeDuration(exam) > 60) {
+                    final timeStart =
+                    serverDateFormat.parse(exam.thoiGianBatDau);
+
+                    if (!UserManagement().map.containsKey(timeStart.hashCode)) {
+                      flutterLocalNotificationsPlugin.schedule(
+                        timeStart.hashCode,
+                        exam.maLoaiKt,
+                        'Kỳ thi ${exam.maLoaiKt} đã bắt đầu',
+                        timeStart,
+                        platformChannelSpecifics,
+                        payload: '${timeStart.hashCode}',
+                      );
+                      UserManagement().map[timeStart.hashCode] = null;
+                    }
+                  }
+                }
+
                 return InkWell(
                   child: TitleExamItem(
-                    exam: data[index],
+                    exam: exam,
                   ),
                   onTap: () {
-                    if (data[index].status == Exam.RUNNING) {
-                      UserManagement().curExam = data[index];
-                      Navigator.pushReplacementNamed(
-                          context, '/${UIData.EXAM_ROUTE_NAME}');
-                    }
+                    onClickExam(data, index);
                   },
                 );
               }
@@ -84,4 +111,61 @@ class _ListTitleExamScreenState extends ListTypeScreenState<Exam> {
       ],
     );
   }
+
+  void onClickExam(UnmodifiableListView<Exam> data, int index) {
+    if (data[index].status == Exam.RUNNING) {
+      UserManagement().curExamDoing = data[index];
+    }
+
+    if (UserManagement().curUser.userType != UserType.student) {
+      // view score when Exam is finished (only teacher)
+      if (data[index].status == Exam.FINISHED) {
+        Navigator.pushNamed(context, '/${UIData.LIST_SCORE_ROUTE_NAME}');
+      }
+    } else {
+      // do exam (only student)
+      if (data[index].status != Exam.UPCOMING) {
+        Navigator.pushNamed(context, '/${UIData.EXAM_ROUTE_NAME}');
+      } else {
+        //if(data[index].status == Exam.UPCOMING)
+
+        final duration = _computeDuration(data[index]);
+
+        Navigator.pushNamed(
+          context,
+          '/${UIData.TIMER_ROUTE_NAME}',
+          arguments: [
+            duration,
+                () {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              }
+            }
+          ],
+        );
+      }
+    }
+  }
+}
+
+int _computeDuration(Exam exam) {
+  final timeStart = serverDateFormat.parse(exam.thoiGianBatDau);
+  final timeEnd = serverDateFormat.parse(exam.thoiGianKetThuc);
+  final curTime = serverDateFormat.parse(exam.timeserver);
+
+  int duration = 0;
+  if (exam.status == Exam.UPCOMING) {
+    duration = timeStart
+        .difference(curTime)
+        .inSeconds;
+    duration = max(duration, 1);
+  } else if (exam.status == Exam.RUNNING) {
+    duration = timeEnd
+        .difference(curTime)
+        .inSeconds;
+  } else {
+    //Exam.FINISHED
+    duration = 0;
+  }
+  return duration;
 }

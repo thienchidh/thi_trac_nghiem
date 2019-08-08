@@ -11,16 +11,12 @@ import 'package:thi_trac_nghiem/ui/widget/load_more_item.dart';
 abstract class BaseScreenState<T> extends State<StatefulWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  DataSource<T> _dataSource;
-  DataBloc bloc;
+  IDataSource<T> _dataSource;
+  DataBloc<T> bloc;
   StreamSubscription<void> subscriptionReachMaxItems;
   StreamSubscription<Object> subscriptionError;
 
   bool isReachMaxItem = false;
-
-  DataSource<T> initDataSource();
-
-  List<String> buildDataSourceParameter();
 
   BaseScreenState() {
     _dataSource = initDataSource();
@@ -31,11 +27,14 @@ abstract class BaseScreenState<T> extends State<StatefulWidget> {
     subscriptionError = bloc.error.listen(onError);
   }
 
+  IDataSource<T> initDataSource();
+
+  List<String> buildDataSourceParameter();
+
   void loadMore() {
     if (isReachMaxItem) {
       return;
     }
-    print('logic.bloc.loadMore.add(null)');
     bloc.loadMore.add(null);
   }
 
@@ -85,15 +84,14 @@ abstract class PageTypeScreenState<T> extends BaseScreenState<T> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return null;
+    throw Error();
   }
 }
 
 abstract class ListTypeScreenState<T> extends BaseScreenState<T> {
+  static const _offsetVisibleThreshold = 100;
   final scrollController = ScrollController();
   bool isHideFloatingButton = true;
-
-  static const _offsetVisibleThreshold = 100;
 
   ListTypeScreenState() : super() {
     // add listener to scroll controller
@@ -134,17 +132,21 @@ abstract class ListTypeScreenState<T> extends BaseScreenState<T> {
       floatingActionButton: Visibility(
         visible: !isHideFloatingButton,
         child: FloatingActionButton(
-          tooltip: 'Scroll to top',
+          tooltip: 'Lên đầu trang',
           mini: true,
           child: Icon(
             Icons.keyboard_arrow_up,
           ),
-          onPressed: () {
+          onPressed: () async {
+            scrollController.jumpTo(5.0);
             scrollController.animateTo(
               0.0,
-              curve: Curves.ease,
-              duration: const Duration(milliseconds: 10000),
+              curve: Curves.easeInOutQuad,
+              duration: Duration(milliseconds: 100),
             );
+            setState(() {
+              isHideFloatingButton = true;
+            });
           },
         ),
       ),
