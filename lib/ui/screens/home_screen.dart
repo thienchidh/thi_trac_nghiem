@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:thi_trac_nghiem/logic/bloc/menu_bloc.dart';
 import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/api_model/account.dart';
@@ -17,6 +21,31 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _scaffoldState = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    _checkPermissions();
+    super.initState();
+  }
+
+  Future<void> _checkPermissions() async {
+    final permissions = [PermissionGroup.microphone];
+    final permissionHandler = PermissionHandler();
+
+    Map<PermissionGroup, PermissionStatus> map =
+    await permissionHandler.requestPermissions(permissions);
+
+    map.forEach(
+          (request, status) async {
+        if (status.value != PermissionStatus.granted.value) {
+          print("PermissionStatus[value] != granted");
+          print("exit app!");
+          SystemChannels.platform
+              .invokeMethod('SystemNavigator.pop'); // exit app
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

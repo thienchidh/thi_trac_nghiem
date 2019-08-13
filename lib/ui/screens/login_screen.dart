@@ -3,7 +3,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:thi_trac_nghiem/logic/user_management.dart';
 import 'package:thi_trac_nghiem/model/api_model/account.dart';
 import 'package:thi_trac_nghiem/ui/widget/load_more_item.dart';
-import 'package:thi_trac_nghiem/utils/delay_ultis.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 import 'package:toast/toast.dart';
 
@@ -33,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _initialize();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initialize());
   }
 
   @override
@@ -250,11 +249,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _initialize() async {
-    await Future.delayed(Duration(milliseconds: 100)); // this is feature
-
-    DelayUltis ultis = DelayUltis(milliseconds: 900);
-    ultis.start();
-
     try {
       Map<String, String> map = await storage.readAll();
 
@@ -268,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
           password: password,
           isStudent: isStudent,
         );
-        if (username == null || username != null && username.isEmpty) {
+        if (username == null || (username != null && username.isEmpty)) {
           isStudent = true;
         }
       });
@@ -283,17 +277,12 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoginSuccess = await _login();
         }
 
-        await ultis.finish();
-
         if (isLoginSuccess) {
           await _forwardHomeScreen();
         }
       }
     } finally {
-      ultis.finish();
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     }
   }
 

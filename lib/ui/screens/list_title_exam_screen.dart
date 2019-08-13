@@ -7,13 +7,13 @@ import 'package:thi_trac_nghiem/api/data_source/exam_data_source.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
 import 'package:thi_trac_nghiem/logic/bloc/data_bloc.dart';
 import 'package:thi_trac_nghiem/logic/user_management.dart';
-import 'package:thi_trac_nghiem/main.dart';
 import 'package:thi_trac_nghiem/model/api_model/account.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_students.dart';
 import 'package:thi_trac_nghiem/ui/screens/base_screen_state.dart';
 import 'package:thi_trac_nghiem/ui/widget/error_item.dart';
 import 'package:thi_trac_nghiem/ui/widget/load_more_item.dart';
 import 'package:thi_trac_nghiem/ui/widget/title_exam_item.dart';
+import 'package:thi_trac_nghiem/utils/notification_ultis.dart';
 import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 class ListTitleExamScreen extends StatefulWidget {
@@ -22,6 +22,12 @@ class ListTitleExamScreen extends StatefulWidget {
 }
 
 class _ListTitleExamScreenState extends ListTypeScreenState<Exam> {
+  NotificationUltis _notificationUltis;
+
+  _ListTitleExamScreenState() : super() {
+    _notificationUltis = NotificationUltis(context);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -73,12 +79,13 @@ class _ListTitleExamScreenState extends ListTypeScreenState<Exam> {
                     serverDateFormat.parse(exam.thoiGianBatDau);
 
                     if (!UserManagement().map.containsKey(timeStart.hashCode)) {
-                      flutterLocalNotificationsPlugin.schedule(
+                      _notificationUltis.flutterLocalNotificationsPlugin
+                          .schedule(
                         timeStart.hashCode,
                         exam.maLoaiKt,
                         'Kỳ thi ${exam.maLoaiKt} đã bắt đầu',
                         timeStart,
-                        platformChannelSpecifics,
+                        _notificationUltis.platformChannelSpecifics,
                         payload: '${timeStart.hashCode}',
                       );
                       UserManagement().map[timeStart.hashCode] = null;
