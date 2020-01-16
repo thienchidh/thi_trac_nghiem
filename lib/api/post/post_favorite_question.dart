@@ -20,7 +20,7 @@ class PostFavoriteQuestion {
       DelayUltis ultis = DelayUltis(milliseconds: DEFAULT_MILLIS_SLEEP_API);
       ultis.start();
 
-      final url = '$baseUrl/apiThitracnghiem/api03/SinhVien/postFavourite';
+      final url = '$baseUrl/$apiName/api03/SinhVien/postFavourite';
 
       final response = await _client
           .post(url, body: favoriteItem.toMap())

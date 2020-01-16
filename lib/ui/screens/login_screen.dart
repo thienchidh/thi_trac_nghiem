@@ -162,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Checkbox(
                     value: _isRememberPassword,
                     onChanged: (newValue) => setState(
-                          () => _isRememberPassword = newValue,
+                      () => _isRememberPassword = newValue,
                     ),
                   ),
                   Text(
@@ -257,14 +257,14 @@ class _LoginScreenState extends State<LoginScreen> {
       bool isStudent = map['isStudent'] == 'true';
 
       setState(() {
+        if (username == null || (username != null && username.isEmpty)) {
+          isStudent = true;
+        }
         _account = Account(
           username: username,
           password: password,
           isStudent: isStudent,
         );
-        if (username == null || (username != null && username.isEmpty)) {
-          isStudent = true;
-        }
       });
       _txtEmailController.text = _account.username;
       _txtPasswordController.text = _account.password;

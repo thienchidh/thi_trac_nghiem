@@ -34,7 +34,7 @@ class DataListState<T> {
       DataListState<T>(
         error: error,
         listData:
-        listData != null ? UnmodifiableListView(listData) : this.listData,
+            listData != null ? UnmodifiableListView(listData) : this.listData,
         isLoading: isLoading ?? this.isLoading,
       );
 
@@ -42,9 +42,9 @@ class DataListState<T> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           other is DataListState<T> &&
-          runtimeType == other.runtimeType &&
+              runtimeType == other.runtimeType &&
               const ListEquality().equals(listData, other.listData) &&
-          isLoading == other.isLoading &&
+              isLoading == other.isLoading &&
           error == other.error;
 
   @override
@@ -182,17 +182,21 @@ class DataBloc<T> {
       );
     } catch (e) {
       // if error was occurred, emit error
-      _errorController.add(e);
+      if (!_errorController.isClosed) {
+        _errorController.add(e);
 
-      print('DataBloc._loadMoreData.error = $e');
+        print('DataBloc._loadMoreData.error = $e');
 
-      yield latestState.copyWith(
-        isLoading: false,
-        error: e,
-      );
+        yield latestState.copyWith(
+          isLoading: false,
+          error: e,
+        );
+      }
     } finally {
       if (loadFirstPage) {
-        _isLoadingFirstPageController.add(false);
+        if (!_isLoadingFirstPageController.isClosed) {
+          _isLoadingFirstPageController.add(false);
+        }
       }
     }
   }

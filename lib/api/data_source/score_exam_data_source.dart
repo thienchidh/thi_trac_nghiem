@@ -28,7 +28,7 @@ class ScoreExamDataSource extends DataSource<ExamQuestions> {
   }
 
   String _getPath() {
-    return '$baseUrl/apiThitracnghiem/api01/General?doing=getInfo&actionInfo=getDiem_Baithi&mssv=$_studentCode&bai_thi=$_examCode';
+    return '$baseUrl/$apiName/api01/General?doing=getInfo&actionInfo=getDiem_Baithi&mssv=$_studentCode&bai_thi=$_examCode';
   }
 
   Future<List<ExamQuestions>> _fetchNetworkResult() async {

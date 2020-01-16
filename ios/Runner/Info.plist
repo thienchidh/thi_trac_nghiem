@@ -2,25 +2,29 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>GADApplicationIdentifier</key>
+    <string>ca-app-pub-6815271897149213~1953848992</string>
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
     <key>NSContactsUsageDescription</key>
-    <string>This application needs to the contacts usage description permission</string>
+    <string>This application needs to the contacts usage description permission to define type of user.</string>
     <key>NSCalendarsUsageDescription</key>
-    <string>This application needs the calendars usage description permission</string>
+    <string>This application needs the calendars usage description permission to set schedule for Exam</string>
     <key>NSAppleMusicUsageDescription</key>
-    <string>This application needs the apple music usage description permission</string>
+    <string>This application needs the apple music usage description permission to use push notification for user</string>
     <key>NSMotionUsageDescription</key>
-    <string>This application needs the motion usage description permission</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-    <string>This application needs the location always usage description permission</string>
+    <string>This application needs the motion usage description permission to define user action</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This application needs the location always usage description permissionto define user location.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>This application needs the location when in use usage description permission </string>
+    <string>This application needs the location when in use usage description permission to define user location.</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>This application needs to access your microphone</string>
+    <string>This application needs to access your microphone to use the speech recognition function.</string>
     <key>NSSpeechRecognitionUsageDescription</key>
-    <string>This application needs the speech recognition permission</string>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>CFBundleExecutable</key>
+    <string>This application needs the speech recognition permission to use the search question function.</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>

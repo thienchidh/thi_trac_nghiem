@@ -73,7 +73,12 @@ class _SettingExamScreenState extends State<SettingExamScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(
+          ModalRoute.of(context).settings.name.substring(1),
+        ),
+        elevation: 0,
+      ),
       drawer: CommonDrawer(),
       body: SingleChildScrollView(
         child: Padding(

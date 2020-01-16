@@ -16,7 +16,7 @@ class LoginApi {
 
   Future<User> verifyLogin(Account account) async {
     try {
-      final url = '$baseUrl/apiThitracnghiem/api01/General/getAuthen';
+      final url = '$baseUrl/$apiName/api01/General/getAuthen';
 
       final response = await _client
           .post(url, body: account.toMap())

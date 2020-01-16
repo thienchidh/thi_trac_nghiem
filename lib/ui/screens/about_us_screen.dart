@@ -7,7 +7,9 @@ class AboutUsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(UIData.ABOUT_US),
+        title: Text(
+          ModalRoute.of(context).settings.name.substring(1),
+        ),
       ),
       drawer: CommonDrawer(),
       body: SingleChildScrollView(

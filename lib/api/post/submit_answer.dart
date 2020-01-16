@@ -21,14 +21,14 @@ class SubmitAnswer {
       DelayUltis ultis = DelayUltis(milliseconds: DEFAULT_MILLIS_SLEEP_API);
       ultis.start();
 
-      final url = '$baseUrl/apiThitracnghiem/api03/SinhVien/postDapAn_Bailam';
+      final url = '$baseUrl/$apiName/api03/SinhVien/postDapAn_Bailam';
 
       final response = await _client
           .post(url,
-          body: answer.toMap()
-            ..addAll({
-              'isSubmited': isOnlySave ? '0' : '1',
-            }))
+              body: answer.toMap()
+                ..addAll({
+                  'isSubmited': isOnlySave ? '0' : '1',
+                }))
           .timeout(connectTimedOut);
 
       final results = json.decode(response.body);

@@ -22,25 +22,58 @@ import 'package:thi_trac_nghiem/utils/ui_data.dart';
 
 void main() {
   Admob.initialize(getAppId());
+  _initAds();
   runApp(MyApp());
+}
+
+AdmobInterstitial interstitialAd;
+AdmobReward rewardAd;
+
+Future<void> _initAds() async {
+  interstitialAd = AdmobInterstitial(
+    adUnitId: getInterstitialAdUnitId(),
+    listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+      if (event == AdmobAdEvent.closed) interstitialAd.load();
+    },
+  );
+
+  rewardAd = AdmobReward(
+    adUnitId: getRewardedVideoAdUnitId(),
+    listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+      if (event == AdmobAdEvent.closed) rewardAd.load();
+    },
+  );
+
+  interstitialAd.load();
+  rewardAd.load();
 }
 
 String getAppId() {
   if (Platform.isAndroid) {
     return 'ca-app-pub-6815271897149213~5567088110';
-  } else if (Platform.isIOS) {
-    return null;
   }
-  return null;
+  return 'ca-app-pub-6815271897149213~1953848992';
 }
 
 String getBannerAdUnitId() {
   if (Platform.isAndroid) {
-    return 'ca-app-pub-6815271897149213/6497026400';
-  } else if (Platform.isIOS) {
-    return null;
+    return 'ca-app-pub-6815271897149213/5604732661';
   }
-  return null;
+  return 'ca-app-pub-6815271897149213/9092497635';
+}
+
+String getInterstitialAdUnitId() {
+  if (Platform.isAndroid) {
+    return 'ca-app-pub-6815271897149213/6497026400';
+  }
+  return 'ca-app-pub-6815271897149213/9854914961';
+}
+
+String getRewardedVideoAdUnitId() {
+  if (Platform.isAndroid) {
+    return 'ca-app-pub-6815271897149213/2166968961';
+  }
+  return 'ca-app-pub-6815271897149213/5724098266';
 }
 
 class MyApp extends StatelessWidget {

@@ -21,7 +21,6 @@ class AboutApp extends StatelessWidget {
       ],
       applicationName: '${UIData.APP_NAME}',
       applicationVersion: 'Phiên bản ${UIData.VERSION_APP}',
-      applicationLegalese: 'Apache License 2.0',
     );
   }
 }

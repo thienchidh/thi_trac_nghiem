@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 
-const String baseUrl = 'http://103.81.86.156:8080';
+const String baseUrl = 'http://103.81.84.196:8080';
+const String apiName = 'apiThitracnghiem';
 const String STATUS_SUCCESS = 'success';
 const String STATUS_FAILED = 'failed';
 const String STATUS = 'status';

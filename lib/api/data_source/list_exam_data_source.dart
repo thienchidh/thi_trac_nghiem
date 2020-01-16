@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
+import 'package:thi_trac_nghiem/api/config/config_api.dart';
 import 'package:thi_trac_nghiem/api/data_source/i_data_source.dart';
 import 'package:thi_trac_nghiem/model/api_model/exam_questions.dart';
 import 'package:thi_trac_nghiem/model/api_model/list_exam_questions.dart';
@@ -28,7 +29,7 @@ class ListExamDataSource extends DataSource<ExamQuestions> {
   }
 
   String _getPath() {
-    return 'http://103.81.86.156:8080/apiThitracnghiem/api01/General?doing=getInfo&actionInfo=getInfoDethiOfMSSVBaithi&mssv=$_studentCode&startId=$_startId';
+    return '$baseUrl/$apiName/api01/General?doing=getInfo&actionInfo=getInfoDethiOfMSSVBaithi&mssv=$_studentCode&startId=$_startId';
   }
 
   Future<List<ExamQuestions>> _fetchNetworkResult() async {

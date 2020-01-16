@@ -28,7 +28,7 @@ class FavoriteDataSource extends DataSource<Question> {
   }
 
   String _getPath() {
-    return '$baseUrl/apiThitracnghiem/api01/General?doing=getInfo&actionInfo=getFavourite&mssv=$_studentCode&startId=$_startId';
+    return '$baseUrl/$apiName/api01/General?doing=getInfo&actionInfo=getFavourite&mssv=$_studentCode&startId=$_startId';
   }
 
   Future<List<Question>> _fetchNetworkResult() async {

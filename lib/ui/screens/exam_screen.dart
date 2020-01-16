@@ -72,9 +72,7 @@ class _ExamScreenState extends BaseScreenState<ExamQuestions> {
 
             int duration = 0;
             if (exam.status == Exam.RUNNING) {
-              duration += timeEnd
-                  .difference(curTime)
-                  .inSeconds;
+              duration += timeEnd.difference(curTime).inSeconds;
             }
             duration = max(duration, 0);
 

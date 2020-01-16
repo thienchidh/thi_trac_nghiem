@@ -20,8 +20,7 @@ class PostExamSchedule {
       DelayUltis ultis = DelayUltis(milliseconds: DEFAULT_MILLIS_SLEEP_API);
       ultis.start();
 
-      final url =
-          '$baseUrl/apiThitracnghiem/api02/GiangVien/postLichThi_Lop_BaiThi';
+      final url = '$baseUrl/$apiName/api02/GiangVien/postLichThi_Lop_BaiThi';
 
       final response = await _client
           .post(url, body: examSchedule.toMap())

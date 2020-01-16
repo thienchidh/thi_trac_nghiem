@@ -29,7 +29,7 @@ class ExamDataSource extends DataSource<Exam> {
   }
 
   String _getPath() {
-    return '$baseUrl/apiThitracnghiem/api01/General?doing=getInfo&actionInfo=getListInfoOfLop&lop=$_lop&mssv=$_studentCode';
+    return '$baseUrl/$apiName/api01/General?doing=getInfo&actionInfo=getListInfoOfLop&lop=$_lop&mssv=$_studentCode';
   }
 
   Future<List<Exam>> _fetchNetworkResult() async {

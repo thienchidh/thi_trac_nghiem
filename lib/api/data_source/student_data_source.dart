@@ -41,7 +41,7 @@ class StudentDataSource extends DataSource<Student> {
   }
 
   String _getPath() {
-    return '$baseUrl/apiThitracnghiem/api01/General?doing=getInfo&actionInfo=getListInfoOfLop&lop=$_lop';
+    return '$baseUrl/$apiName/api01/General?doing=getInfo&actionInfo=getListInfoOfLop&lop=$_lop';
   }
 
   Future<List<Student>> _fetchNetworkResult() async {

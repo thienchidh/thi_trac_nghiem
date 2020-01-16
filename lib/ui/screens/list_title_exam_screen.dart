@@ -59,11 +59,7 @@ class _ListTitleExamScreenState extends ListTypeScreenState<Exam> {
       slivers: <Widget>[
         SliverAppBar(
           title: Text(
-            ModalRoute
-                .of(context)
-                .settings
-                .name
-                .substring(1),
+            ModalRoute.of(context).settings.name.substring(1),
           ),
         ),
         SliverList(
@@ -71,9 +67,7 @@ class _ListTitleExamScreenState extends ListTypeScreenState<Exam> {
                 (context, index) {
               if (index < data.length) {
                 final exam = data[index];
-                if (exam.status != Exam.UPCOMING) {
-                  UserManagement().curExamDoing = exam;
-                } else if (exam.status == Exam.UPCOMING) {
+                if (exam.status == Exam.UPCOMING) {
                   if (_computeDuration(exam) > 60) {
                     final timeStart =
                     serverDateFormat.parse(exam.thoiGianBatDau);
@@ -127,11 +121,13 @@ class _ListTitleExamScreenState extends ListTypeScreenState<Exam> {
     if (UserManagement().curUser.userType != UserType.student) {
       // view score when Exam is finished (only teacher)
       if (data[index].status == Exam.FINISHED) {
+        UserManagement().curExamDoing = data[index];
         Navigator.pushNamed(context, '/${UIData.LIST_SCORE_ROUTE_NAME}');
       }
     } else {
       // do exam (only student)
       if (data[index].status != Exam.UPCOMING) {
+        UserManagement().curExamDoing = data[index];
         Navigator.pushNamed(context, '/${UIData.EXAM_ROUTE_NAME}');
       } else {
         //if(data[index].status == Exam.UPCOMING)
